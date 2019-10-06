@@ -14,10 +14,10 @@ Try to find **shortest path** for pacman o reach the goal with 3 diffrent algori
 **Light Blue** cells: **frontier** cells
 
 ### BFS
-![bfs-example](Project_01/example/bfs.gif)
+![bfs-example](example/bfs.gif)
 
 ### DFS
-![dfs-example](Project_01/example/dfs.gif)
+![dfs-example](example/dfs.gif)
 
 ### A*
-![astar-example](Project_01/example/astar.gif)
+![astar-example](example/astar.gif)
