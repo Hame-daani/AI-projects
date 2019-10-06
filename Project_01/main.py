@@ -26,11 +26,20 @@ grid = []
 
 def initial_state():
     global grid, dimension, num_cells, start, end, frontier
+    # create grid
     grid = [[Cell(i, j, dimension) for j in range(num_cells)]
             for i in range(num_cells)]
+    # add neighbors for each cell
+    for row in grid:
+        for c in row:
+            c.addNeighbors(grid, num_cells)
+    # choose start
     start = grid[0][0]
+    # choose end
     end = grid[num_cells-1][num_cells-1]
     frontier = []
+    # initial frontier with start
+    frontier.append(start)
 
 
 def setup():
@@ -43,6 +52,10 @@ def setup():
 def draw():
     global grid, speed, frontier
     frameRate(speed)
+    # calculation
+    current, result = bfs(frontier, end)
+    if result == "done" or result == "failure":
+        noLoop()
     # draw grid
     for row in grid:
         for cell in row:
@@ -52,6 +65,14 @@ def draw():
                 cell.show(blue)
             else:
                 cell.show(white)
+    # draw path
+    path = []
+    temp = current
+    while temp:
+        path.append(temp)
+        temp = temp.previous
+    for x in path:
+        x.show(green) if result == "done" else x.show(yellow)
     # draw start and end
     start.show(green)
     end.show(red)
@@ -62,3 +83,4 @@ def draw():
 
 def mouseClicked():
     initial_state()
+    redraw()
