@@ -24,23 +24,41 @@ path = []
 grid = []
 
 
-def setup():
-    global screen_size, grid, dimension, start, end
-    dimension = width / num_cells
+def initial_state():
+    global grid, dimension, num_cells, start, end, frontier
     grid = [[Cell(i, j, dimension) for j in range(num_cells)]
             for i in range(num_cells)]
     start = grid[0][0]
     end = grid[num_cells-1][num_cells-1]
+    frontier = []
+
+
+def setup():
+    global screen_size, grid, dimension, start, end
+    dimension = width / num_cells
+    initial_state()
     size(screen_size, screen_size)
 
 
 def draw():
-    global grid, speed
+    global grid, speed, frontier
     frameRate(speed)
-    # show grid
+    # draw grid
     for row in grid:
         for cell in row:
-            cell.show(white)
-    # show start and end
+            if cell.isWall:
+                cell.show(black)
+            elif cell.explored:
+                cell.show(blue)
+            else:
+                cell.show(white)
+    # draw start and end
     start.show(green)
     end.show(red)
+    # draw frontier
+    for f in frontier:
+        f.show(light_blue)
+
+
+def mouseClicked():
+    initial_state()
