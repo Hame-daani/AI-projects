@@ -2,7 +2,6 @@ from core.objects import Cell
 from core.algorithms import bfs
 
 # colors
-# pylint: disable=undefined-variable
 black = color(0, 0, 0)
 green = color(0, 255, 0)
 blue = color(0, 0, 255)
@@ -10,25 +9,33 @@ light_blue = color(102, 255, 255)
 white = color(255)
 red = color(255, 0, 0)
 yellow = color(255, 255, 0)
-# pylint: enable=undefined-variable
 
 # dimension
-num_cells = 20
+num_cells = 10
 dimension = 0
 screen_size = 500
-speed = 100
+speed = 10
 
 # global vars
 frontier = []
 start = None
 end = None
 path = []
-grid = [[Cell(i, j) for j in range(num_cells)] for i in range(num_cells)]
+grid = []
 
 
 def setup():
-    pass
+    global screen_size, grid, dimension
+    dimension = width / num_cells
+    grid = [[Cell(i, j, dimension) for j in range(num_cells)]
+            for i in range(num_cells)]
+    size(screen_size, screen_size)
 
 
 def draw():
-    pass
+    global grid, speed
+    frameRate(speed)
+    # show grid
+    for row in grid:
+        for cell in row:
+            cell.show(white)
