@@ -1,5 +1,7 @@
 from random import uniform
 
+startImg = loadImage("res/pacman.png")
+
 
 class Cell(object):
     def __init__(self, i, j, d):
@@ -10,6 +12,8 @@ class Cell(object):
         self.neighbors = []
         self.previous = None
         self.size = d
+        self.isStart = False
+        self.isEnd = False
         # add walls
         if uniform(0, 1) < 0.2:
             self.isWall = True
@@ -32,4 +36,12 @@ class Cell(object):
     def show(self, color):
         fill(color)
         noStroke()
-        rect(self.i*self.size, self.j*self.size, self.size-1, self.size-1)
+        if self.isStart:
+            global startImg
+            image(startImg, self.i*self.size, self.j *
+                  self.size, self.size-1, self.size-1)
+        elif self.isEnd:
+            circle(self.i*self.size+self.size/2, self.j *
+                   self.size+self.size/2, self.size/2)
+        else:
+            rect(self.i*self.size, self.j*self.size, self.size-1, self.size-1)

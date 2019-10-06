@@ -1,5 +1,5 @@
 from core.objects import Cell
-from core.algorithms import dfs
+from core.algorithms import dfs, bfs
 
 # colors
 black = color(0, 0, 0)
@@ -35,8 +35,12 @@ def initial_state():
             c.addNeighbors(grid, num_cells)
     # choose start
     start = grid[0][0]
+    start.isWall = False
+    start.isStart = True
     # choose end
     end = grid[num_cells-1][num_cells-1]
+    end.isWall = False
+    end.isEnd = True
     frontier = []
     # initial frontier with start
     frontier.append(start)
@@ -53,7 +57,7 @@ def draw():
     global grid, speed, frontier
     frameRate(speed)
     # calculation
-    current, result = dfs(frontier, end)
+    current, result = bfs(frontier, end)
     if result == "done" or result == "failure":
         noLoop()
     # draw grid
@@ -63,6 +67,8 @@ def draw():
                 cell.show(black)
             elif cell.explored:
                 cell.show(blue)
+            elif cell.isStart or cell.isEnd:
+                cell.show(yellow)
             else:
                 cell.show(white)
     # draw path
@@ -72,11 +78,10 @@ def draw():
     while temp:
         path.append(temp)
         temp = temp.previous
+    if current == end:
+        print(path)
     for x in path:
         x.show(green) if result == "done" else x.show(yellow)
-    # draw start and end
-    start.show(green)
-    end.show(red)
     # draw frontier
     for f in frontier:
         f.show(light_blue)
