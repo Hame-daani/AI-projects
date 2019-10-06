@@ -1,5 +1,5 @@
 from core.objects import Cell
-from core.algorithms import dfs, bfs
+from core.algorithms import dfs, bfs, heuristic, astar
 
 # colors
 black = color(0, 0, 0)
@@ -11,10 +11,10 @@ red = color(255, 0, 0)
 yellow = color(255, 255, 0)
 
 # dimension
-num_cells = 10
+num_cells = 20
 dimension = 0
-screen_size = 800
-speed = 10
+screen_size = 500
+speed = 20
 
 # global vars
 frontier = []
@@ -37,10 +37,12 @@ def initial_state():
     start = grid[0][0]
     start.isWall = False
     start.isStart = True
+    start.g = 0
     # choose end
     end = grid[num_cells-1][num_cells-1]
     end.isWall = False
     end.isEnd = True
+    start.f = heuristic(start, end)
     frontier = []
     # initial frontier with start
     frontier.append(start)
@@ -57,7 +59,7 @@ def draw():
     global grid, speed, frontier
     frameRate(speed)
     # calculation
-    current, result = bfs(frontier, end)
+    current, result = astar(frontier, end)
     if result == "done" or result == "failure":
         print(result)
         noLoop()
