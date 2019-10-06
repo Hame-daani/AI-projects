@@ -25,10 +25,12 @@ grid = []
 
 
 def setup():
-    global screen_size, grid, dimension
+    global screen_size, grid, dimension, start, end
     dimension = width / num_cells
     grid = [[Cell(i, j, dimension) for j in range(num_cells)]
             for i in range(num_cells)]
+    start = grid[0][0]
+    end = grid[num_cells-1][num_cells-1]
     size(screen_size, screen_size)
 
 
@@ -39,3 +41,6 @@ def draw():
     for row in grid:
         for cell in row:
             cell.show(white)
+    # show start and end
+    start.show(green)
+    end.show(red)
