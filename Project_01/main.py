@@ -1,5 +1,5 @@
 from core.objects import Cell
-from core.algorithms import bfs
+from core.algorithms import dfs
 
 # colors
 black = color(0, 0, 0)
@@ -53,7 +53,7 @@ def draw():
     global grid, speed, frontier
     frameRate(speed)
     # calculation
-    current, result = bfs(frontier, end)
+    current, result = dfs(frontier, end)
     if result == "done" or result == "failure":
         noLoop()
     # draw grid
@@ -66,6 +66,7 @@ def draw():
             else:
                 cell.show(white)
     # draw path
+    # BUG: sometime not draw green the path
     path = []
     temp = current
     while temp:
@@ -82,5 +83,6 @@ def draw():
 
 
 def mouseClicked():
+    # BUG: not work when last done
     initial_state()
     redraw()
