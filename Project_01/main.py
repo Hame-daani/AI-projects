@@ -13,7 +13,7 @@ yellow = color(255, 255, 0)
 # dimension
 num_cells = 10
 dimension = 0
-screen_size = 500
+screen_size = 800
 speed = 10
 
 # global vars
@@ -59,6 +59,7 @@ def draw():
     # calculation
     current, result = bfs(frontier, end)
     if result == "done" or result == "failure":
+        print(result)
         noLoop()
     # draw grid
     for row in grid:
@@ -76,10 +77,9 @@ def draw():
     path = []
     temp = current
     while temp:
-        path.append(temp)
+        if not temp == end:
+            path.append(temp)
         temp = temp.previous
-    if current == end:
-        print(path)
     for x in path:
         x.show(green) if result == "done" else x.show(yellow)
     # draw frontier
@@ -88,6 +88,5 @@ def draw():
 
 
 def mouseClicked():
-    # BUG: not work when last done
     initial_state()
-    redraw()
+    loop()
