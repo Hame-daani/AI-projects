@@ -13,7 +13,7 @@ yellow = color(255, 255, 0)
 # dimension
 num_cells = 20
 dimension = 0
-screen_size = 500
+screen_size = 800
 speed = 10
 
 # global vars
@@ -22,16 +22,22 @@ start = None
 end = None
 path = []
 grid = []
+doWhat = 0
 
 
 def initial_state():
     global grid, dimension, num_cells, start, end, frontier
     # create grid
-    grid = [[Cell(i, j, dimension) for j in range(num_cells)]
-            for i in range(num_cells)]
-    # add neighbors for each cell
     for row in grid:
         for c in row:
+            c.explored = False
+            c.neighbors = []
+            c.previous = None
+            c.isStart = False
+            c.isEnd = False
+            # for use in astra alg
+            c.f = 100000000
+            c.g = 100000000
             c.addNeighbors(grid, num_cells)
     # choose start
     start = grid[num_cells/2][num_cells/2]
@@ -51,15 +57,22 @@ def initial_state():
 def setup():
     global screen_size, grid, dimension, start, end
     dimension = width / num_cells
+    grid = [[Cell(i, j, dimension) for j in range(num_cells)]
+            for i in range(num_cells)]
     initial_state()
     size(screen_size, screen_size)
+    frameRate(speed)
 
 
 def draw():
-    global grid, speed, frontier
-    frameRate(speed)
+    global grid, speed, frontier, doWhat
     # calculation
-    current, result = astar(frontier, end)
+    if doWhat == 0:
+        current, result = bfs(frontier, end)
+    if doWhat == 1:
+        current, result = dfs(frontier, end)
+    if doWhat == 2:
+        current, result = astar(frontier, end)
     if result == "done" or result == "failure":
         print(result)
         noLoop()
@@ -80,10 +93,8 @@ def draw():
     temp = current
     while temp:
         if not temp == end:
-            path.append(temp)
+            temp.show(green) if result == "done" else temp.show(yellow)
         temp = temp.previous
-    for x in path:
-        x.show(green) if result == "done" else x.show(yellow)
     # draw frontier
     for f in frontier:
         f.show(light_blue)
@@ -91,4 +102,12 @@ def draw():
 
 def mouseClicked():
     initial_state()
+    global doWhat
+    doWhat = (doWhat+1) % 3
+    if doWhat == 0:
+        print("BFS")
+    if doWhat == 1:
+        print("DFS")
+    if doWhat == 1:
+        print("Astar")
     loop()

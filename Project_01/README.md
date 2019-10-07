@@ -1,6 +1,6 @@
 # Pacman
 
-Try to find **shortest path** for pacman o reach the goal with 3 diffrent algorithmes.
+Try to find **shortest path** for pacman to reach the goal with 3 diffrent algorithmes.
 
 ## How to use it
 
@@ -14,10 +14,20 @@ Try to find **shortest path** for pacman o reach the goal with 3 diffrent algori
 **Light Blue** cells: **frontier** cells
 
 ### BFS
+
+Using **queue** for choosing element from frontier.
+
 ![bfs-example](example/bfs.gif)
 
 ### DFS
+
+Using **stack** for choosing element from frontier.
+
 ![dfs-example](example/dfs.gif)
 
 ### A*
+
+Choose element from frontier with **lowest f**.  
+**Manhattan-distance** use for heuristic.
+
 ![astar-example](example/astar.gif)
