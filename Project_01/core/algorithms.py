@@ -1,6 +1,6 @@
 def bfs(frontier, end):
     # failure check
-    if len(frontier) == 0:
+    if not frontier:
         return None, "failure"
     else:
         # choose l
@@ -8,10 +8,10 @@ def bfs(frontier, end):
         # solution check
         if current == end:
             return current, "done"
-        # expend
+        # expand
         current.explored = True
         for n in current.neighbors:
-            if not n.explored and not n.isWall and not frontier.count(n):
+            if not n.explored and not n.isWall and not n in frontier:
                 n.previous = current
                 frontier.append(n)
         return current, "pass"
@@ -19,7 +19,7 @@ def bfs(frontier, end):
 
 def dfs(frontier, end):
     # failure check
-    if len(frontier) == 0:
+    if not frontier:
         return None, "failure"
     else:
         # choose l
@@ -27,23 +27,22 @@ def dfs(frontier, end):
         # solution check
         if current == end:
             return current, "done"
-        # expend
+        # expand
         current.explored = True
         for n in current.neighbors:
-            if not n.explored and not n.isWall and not frontier.count(n):
+            if not n.explored and not n.isWall and not n in frontier:
                 n.previous = current
                 frontier.append(n)
         return current, "pass"
 
 
 def heuristic(a, b):
-    import math
-    # return math.sqrt((a.i-b.i)**2 + (a.j-b.j)**2)
     return abs(a.i-b.i) + abs(a.j-b.j)
 
 
 def astar(frontier, end):
-    if len(frontier) == 0:
+    # failure check
+    if not frontier:
         return None, "failure"
     else:
         # choose l
@@ -54,15 +53,15 @@ def astar(frontier, end):
         # solution check
         if current == end:
             return current, "done"
-        # expend
-        frontier.remove(current)
+        # expand
         current.explored = True
+        frontier.remove(current)
         for n in current.neighbors:
             if not n.explored and not n.isWall:
                 if n.g > current.g+1:
                     n.previous = current
                     n.g = current.g+1
                     n.f = n.g+heuristic(n, end)
-                    if not frontier.count(n):
+                    if not n in frontier:
                         frontier.append(n)
         return current, "pass"

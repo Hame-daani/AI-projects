@@ -14,7 +14,7 @@ class Cell(object):
         self.size = d
         self.isStart = False
         self.isEnd = False
-        # for use in astra alg
+        # for use in astar algorithm
         self.f = 100000000
         self.g = 100000000
         # add walls

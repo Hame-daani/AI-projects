@@ -27,7 +27,7 @@ doWhat = 0
 
 def initial_state():
     global grid, dimension, num_cells, start, end, frontier
-    # create grid
+    # initial the grid
     for row in grid:
         for c in row:
             c.explored = False
@@ -39,18 +39,18 @@ def initial_state():
             c.f = 100000000
             c.g = 100000000
             c.addNeighbors(grid, num_cells)
+    # choose end
+    end = grid[num_cells-1][num_cells-1]
+    end.isWall = False
+    end.isEnd = True
     # choose start
     start = grid[num_cells/2][num_cells/2]
     start.isWall = False
     start.isStart = True
     start.g = 0
-    # choose end
-    end = grid[num_cells-1][num_cells-1]
-    end.isWall = False
-    end.isEnd = True
     start.f = heuristic(start, end)
-    frontier = []
     # initial frontier with start
+    frontier = []
     frontier.append(start)
 
 
@@ -73,6 +73,7 @@ def draw():
         current, result = dfs(frontier, end)
     if doWhat == 2:
         current, result = astar(frontier, end)
+    # result check
     if result == "done" or result == "failure":
         print(result)
         noLoop()
@@ -88,8 +89,6 @@ def draw():
             else:
                 cell.show(white)
     # draw path
-    # BUG: sometime not draw green the path
-    path = []
     temp = current
     while temp:
         if not temp == end:
@@ -97,7 +96,8 @@ def draw():
         temp = temp.previous
     # draw frontier
     for f in frontier:
-        f.show(light_blue)
+        if not f == end:
+            f.show(light_blue)
 
 
 def mouseClicked():
@@ -108,6 +108,6 @@ def mouseClicked():
         print("BFS")
     if doWhat == 1:
         print("DFS")
-    if doWhat == 1:
+    if doWhat == 2:
         print("Astar")
     loop()

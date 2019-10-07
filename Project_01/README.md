@@ -10,8 +10,8 @@ Try to find **shortest path** for pacman to reach the goal with 3 diffrent algor
 
 ## Examples
 
-**Dark Blue** cells: **explored** cells  
-**Light Blue** cells: **frontier** cells
+**Dark Blue** cells => **explored** cells  
+**Light Blue** cells => **frontier** cells
 
 ### BFS
 
