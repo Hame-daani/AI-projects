@@ -13,7 +13,7 @@ yellow = color(255, 255, 0)
 # dimension
 num_cells = 20
 dimension = 0
-screen_size = 800
+screen_size = 500
 speed = 10
 
 # global vars
