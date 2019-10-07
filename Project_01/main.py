@@ -14,7 +14,7 @@ yellow = color(255, 255, 0)
 num_cells = 20
 dimension = 0
 screen_size = 500
-speed = 20
+speed = 10
 
 # global vars
 frontier = []
@@ -34,7 +34,7 @@ def initial_state():
         for c in row:
             c.addNeighbors(grid, num_cells)
     # choose start
-    start = grid[0][0]
+    start = grid[num_cells/2][num_cells/2]
     start.isWall = False
     start.isStart = True
     start.g = 0
