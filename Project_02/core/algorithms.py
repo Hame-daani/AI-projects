@@ -25,42 +25,12 @@ def graph_search(problem: Problem, frontier: list, explored: set, fn):
         return node, "pass"
 
 
-def bfs(frontier, end):
-    # failure check
-    if not frontier:
-        return None, "failure"
-    else:
-        # choose l
-        current = frontier.pop(0)
-        # solution check
-        if current == end:
-            return current, "done"
-        # expand
-        current.explored = True
-        for n in current.neighbors:
-            if not n.explored and not n.isWall and not n in frontier:
-                n.previous = current
-                frontier.append(n)
-        return current, "pass"
+def breadth_fs(problem: Problem, frontier: list, explored: set):
+    return graph_search(problem, frontier, explored, fn="popleft")
 
 
-def dfs(frontier, end):
-    # failure check
-    if not frontier:
-        return None, "failure"
-    else:
-        # choose l
-        current = frontier.pop()
-        # solution check
-        if current == end:
-            return current, "done"
-        # expand
-        current.explored = True
-        for n in current.neighbors:
-            if not n.explored and not n.isWall and not n in frontier:
-                n.previous = current
-                frontier.append(n)
-        return current, "pass"
+def depth_fs(problem: Problem, frontier: list, explored: set):
+    return graph_search(problem, frontier, explored, fn="pop")
 
 
 def heuristic(a, b):
