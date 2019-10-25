@@ -1,7 +1,7 @@
 from .difinitions import Problem
 
 
-def graph_search(problem: Problem, frontier: list, explored: set, fn):
+def graph_search(problem, frontier, explored, fn):
     # failure check
     if not frontier:
         return None, "failure"
@@ -25,12 +25,14 @@ def graph_search(problem: Problem, frontier: list, explored: set, fn):
         return node, "pass"
 
 
-def breadth_fs(problem: Problem, frontier: list, explored: set):
-    return graph_search(problem, frontier, explored, fn="popleft")
+def breadth_fs(problem, frontier, explored):
+    node, result = graph_search(problem, frontier, explored, fn="popleft")
+    return node, result
 
 
-def depth_fs(problem: Problem, frontier: list, explored: set):
-    return graph_search(problem, frontier, explored, fn="pop")
+def depth_fs(problem, frontier, explored):
+    node, result = graph_search(problem, frontier, explored, fn="pop")
+    return node, result
 
 
 def heuristic(a, b):

@@ -23,7 +23,7 @@ class Node:
         self.action = action
         self.path_cost = path_cost
 
-    def child_node(self, problem: Problem, action):
+    def child_node(self, problem, action):
         next_state = problem.result(self.state, action)
         next_cost = problem.step_cost(
             self.path_cost, fRom=self.state, action=action, to=next_state)
@@ -41,6 +41,12 @@ class Node:
             path.append(node)
             node = node.parent
         return list(reversed(path))
+    # buit_in functions
+
+    def __eq__(self, value):
+        return isinstance(value, Node) and self.state == value.state
+    def __repr__(self):
+        return "<Node {}>".format(self.state)
 
 
 class OneDotProblem(Problem):
@@ -50,13 +56,13 @@ class OneDotProblem(Problem):
 
     def actions(self, state):
         possible_acts = ["UP", "DOWN", "RIGHT", "LEFT"]
-        if state.i == 0:
+        if state.i == 0 or self.grid[state.j][state.i-1].isWall:
             possible_acts.remove("LEFT")
-        if state.j == 0:
+        if state.j == 0 or self.grid[state.j-1][state.i].isWall:
             possible_acts.remove("UP")
-        if state.i == len(self.grid):
+        if state.i == len(self.grid)-1 or self.grid[state.j][state.i+1].isWall:
             possible_acts.remove("RIGHT")
-        if state.j == len(self.grid):
+        if state.j == len(self.grid)-1 or self.grid[state.j+1][state.i].isWall:
             possible_acts.remove("DOWN")
         return possible_acts
 
@@ -64,14 +70,13 @@ class OneDotProblem(Problem):
         old_i = state.i
         old_j = state.j
         if action == "UP":
-            new_state = self.grid[old_j-1][old_i]
+            return self.grid[old_j-1][old_i]
         if action == "DOWN":
-            new_state = self.grid[old_j+1][old_i]
+            return self.grid[old_j+1][old_i]
         if action == "RIGHT":
-            new_state = self.grid[old_j][old_i+1]
+            return self.grid[old_j][old_i+1]
         if action == "LEFT":
-            new_state = self.grid[old_j][old_i-1]
-        return new_state
+            return self.grid[old_j][old_i-1]
 
     def step_cost(self, current_cost, fRom, action, to):
         return current_cost + to.weight
