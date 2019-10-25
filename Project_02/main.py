@@ -2,6 +2,7 @@ from core.objects import Cell
 from core.difinitions import OneDotProblem, Node, AllDotsProblem, State
 from core.algorithms import breadth_fs
 from random import randint
+from core import utils
 
 # colors
 black = color(0, 0, 0)
@@ -12,42 +13,32 @@ white = color(255)
 red = color(255, 0, 0)
 yellow = color(255, 255, 0)
 
-# dimension
-num_cells = 20
+# config
+num_cells = 10
 dimension = 0
 screen_size = 800
-speed = 100
+speed = 5
 
 # global vars
 frontier = []
 explored = set()
 problem = None
-start = None
-end = None
-targets = None
-path = []
 grid = []
-noloop = False
-doWhat = 0
+
 
 
 def initial_state():
-    global grid, dimension, num_cells, start, end, frontier, explored, targets, problem
+    global grid, num_cells, frontier, explored, problem
     # initial the grid
     start = grid[num_cells/2][num_cells/2]
     start.makeit('start')
-    end = grid[-1][-1]
-    end.makeit('end')
-    targets = []
-    for i in range(10):
-        dot = grid[randint(0, num_cells-1)][randint(0, num_cells-1)]
-        dot.makeit('end')
-        targets.append(dot)
+
+    # problem = utils.create_oneDotProblem(start, grid)
+
+    problem = utils.create_allDotsProblem(start, num_cells, grid)
+
     frontier = []
     explored.clear()
-    # problem = AllDotsProblem(initial=State(start, targets), goal=[], grid=grid)
-    problem = OneDotProblem(initial=State(start),
-                            goal=State(end), grid=grid)
     frontier.append(Node(state=problem.initial_state))
 
 
@@ -73,30 +64,16 @@ def draw():
     if result == 'done' or result == 'failure':
         noLoop()
     # draw grid
-    for row in grid:
-        for cell in row:
-            if cell.isWall:
-                cell.show(black)
-            elif cell.isStart or cell.isEnd:
-                cell.show(yellow)
-            else:
-                cell.show(white)
+    utils.draw_grid(grid)
     # draw explored
-    for s in explored:
-        s.cell.show(blue)
+    utils.draw_explored(explored)
     # draw frontier
-    for n in frontier:
-        cell = n.state.cell
-        cell.show(light_blue)
+    utils.draw_frontier(frontier)
     # draw current
     node.state.cell.show(red)
     # draw path
     if result == "done":
-        path = [n.state for n in node.path()]
-        for n in path:
-            n.cell.show(green)
-        print(node.solution())
-        print(node.path_cost)
+        utils.draw_path(node)
 
 
 def mouseClicked():
