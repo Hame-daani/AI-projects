@@ -113,6 +113,8 @@ class State:
 class AllDotsProblem(OneDotProblem):
     def __init__(self, initial, goal=None, grid=[]):
         OneDotProblem.__init__(self, initial, goal=goal, grid=grid)
+        self.dotsDict = dict()
+        self.calcDotsDistDict()
 
     def result(self, state, action):
         cell, targets = state.cell, state.targets
@@ -132,7 +134,62 @@ class AllDotsProblem(OneDotProblem):
         return State(new_cell, new_targets)
 
     def goal_test(self, state):
-        return self.goal == state.targets
+        return len(state.targets) == 0
+
+    def calcDist2(self, a, b):
+        prob = OneDotProblem(initial=State(
+            a), goal=State(b), grid=self.grid)
+        frontier = PriorityQueue('min', prob.h)
+        explored = set()
+        frontier.append(Node(state=prob.initial_state))
+        from core.algorithms import astar
+        while frontier:
+            node, result = astar(prob, frontier, explored)
+            if result == "done":
+                return node.path_cost
+
+    def calcDotsDistDict(self):
+        for a in self.initial_state.targets:
+            for b in self.initial_state.targets:
+                if not a == b:
+                    if (b, a) in self.dotsDict:
+                        self.dotsDict[a, b] = self.dotsDict[b, a]
+                    else:
+                        self.dotsDict[a, b] = self.calcDist2(a, b)
+
+    def h(self, node):
+        # https://stackoverflow.com/questions/9994913/pacman-what-kinds-of-heuristics-are-mainly-used
+        def dist_two_furthest_dots():
+            keys = self.dotsDict.keys()
+            valids = list(
+                set([i for k in keys for i in k])
+                &
+                set(node.state.targets)
+            )
+            l = []
+            for key in self.dotsDict.keys():
+                a, b = key
+                if a in valids and b in valids:
+                    l.append(self.dotsDict.get(key))
+            return max(l)
+        # second function
+
+        def curr_pos_to_close_two(x):
+            for k, v in self.dotsDict.items():
+                if v == x:
+                    a, b = k
+                    dist_to1 = self.calcDist2(a, node.state.cell)
+                    dist_to2 = self.calcDist2(b, node.state.cell)
+                    return min([dist_to1, dist_to2])
+                    # h function
+        if len(node.state.targets) == 1:
+            a = node.state.cell
+            b = node.state.targets[0]
+            return node.path_cost + (abs(a.i-b.i) + abs(a.j-b.j))
+        elif not len(node.state.targets) == 0:
+            x = dist_two_furthest_dots()
+            y = curr_pos_to_close_two(x)
+            return x + y
 
 
 class PriorityQueue:
@@ -144,6 +201,7 @@ class PriorityQueue:
 
     def __init__(self, order='min', f=lambda x: x):
         self.heap = []
+        self.current = -1
 
         if order == 'min':
             self.f = f
@@ -168,6 +226,16 @@ class PriorityQueue:
             return heapq.heappop(self.heap)[1]
         else:
             raise Exception('Trying to pop from empty PriorityQueue.')
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        self.current += 1
+        if self.current < len(self.heap):
+            return self.heap[self.current]
+        self.current = -1
+        raise StopIteration
 
     def __len__(self):
         """Return current capacity of PriorityQueue."""

@@ -16,7 +16,7 @@ def draw_path(node):
 
 
 def draw_frontier(frontier):
-    for n in frontier:
+    for i,n in frontier:
         cell = n.state.cell
         cell.show(light_blue)
 
