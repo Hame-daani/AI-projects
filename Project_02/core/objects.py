@@ -1,7 +1,7 @@
-from random import uniform
+from random import uniform,randint
 
 startImg = loadImage("res/pacman.png")
-
+black = color(0, 0, 0)
 
 class Cell(object):
     def __init__(self, i, j, d):
@@ -10,28 +10,14 @@ class Cell(object):
         self.isWall = False
         self.explored = False
         self.neighbors = []
-        self.previous = None
         self.size = d
         self.isStart = False
         self.isEnd = False
-        # for use in astar algorithm
-        self.f = 100000000
-        self.g = 100000000
         # add walls
         if uniform(0, 1) < 0.2:
             self.isWall = True
+        self.weight = randint(1,10)
 
-    def addNeighbors(self, g, cells):
-        i = self.i
-        j = self.j
-        if i < cells-1:
-            self.neighbors.append(g[i+1][j])
-        if i > 0:
-            self.neighbors.append(g[i-1][j])
-        if j < cells-1:
-            self.neighbors.append(g[i][j+1])
-        if j > 0:
-            self.neighbors.append(g[i][j-1])
 
     def __repr__(self):
         return "({},{})".format(self.i, self.j)
@@ -48,3 +34,18 @@ class Cell(object):
                    self.size+self.size/2, self.size/2)
         else:
             rect(self.i*self.size, self.j*self.size, self.size-1, self.size-1)
+        fill(black)
+        textSize(self.size/4)
+        if self.weight:
+            text(self.weight,self.i*self.size+self.size/3,
+                    self.j*self.size+self.size/2)
+
+    def makeit(self,what):
+        if what == 'start':
+            self.isStart = True
+            self.isEnd = False
+        if what == 'end':
+            self.isEnd = True
+            self.isStart = False
+        self.isWall = False
+        self.weight = 0
