@@ -1,6 +1,7 @@
 from core.objects import Cell
-from core.difinitions import OneDotProblem, Node
+from core.difinitions import OneDotProblem, Node, AllDotsProblem, State
 from core.algorithms import breadth_fs
+from random import randint
 
 # colors
 black = color(0, 0, 0)
@@ -22,8 +23,8 @@ frontier = []
 explored = set()
 problem = None
 start = None
-dots = None
 end = None
+targets = None
 path = []
 grid = []
 noloop = False
@@ -31,16 +32,23 @@ doWhat = 0
 
 
 def initial_state():
-    global grid, dimension, num_cells, start, end, frontier, explored, dots, problem
+    global grid, dimension, num_cells, start, end, frontier, explored, targets, problem
     # initial the grid
     start = grid[num_cells/2][num_cells/2]
-    end = grid[-1][-1]
     start.makeit('start')
+    end = grid[-1][-1]
     end.makeit('end')
+    targets = []
+    for i in range(10):
+        dot = grid[randint(0, num_cells-1)][randint(0, num_cells-1)]
+        dot.makeit('end')
+        targets.append(dot)
     frontier = []
     explored.clear()
-    problem = OneDotProblem(initial=start, goal=end, grid=grid)
-    frontier.append(Node(state=start))
+    # problem = AllDotsProblem(initial=State(start, targets), goal=[], grid=grid)
+    problem = OneDotProblem(initial=State(start),
+                            goal=State(end), grid=grid)
+    frontier.append(Node(state=problem.initial_state))
 
 
 def setup():
@@ -74,20 +82,21 @@ def draw():
             else:
                 cell.show(white)
     # draw explored
-    for cell in explored:
-        cell.show(blue)
+    for s in explored:
+        s.cell.show(blue)
     # draw frontier
     for n in frontier:
-        cell = n.state
+        cell = n.state.cell
         cell.show(light_blue)
     # draw current
-    node.state.show(red)
+    node.state.cell.show(red)
     # draw path
     if result == "done":
         path = [n.state for n in node.path()]
-        for cell in path:
-            cell.show(green)
+        for n in path:
+            n.cell.show(green)
         print(node.solution())
+        print(node.path_cost)
 
 
 def mouseClicked():
