@@ -1,3 +1,30 @@
+from .difinitions import Problem
+
+
+def graph_search(problem: Problem, frontier: list, explored: set, fn):
+    # failure check
+    if not frontier:
+        return None, "failure"
+
+    else:
+        # choosing
+        if fn == 'popleft':
+            node = frontier.pop(0)
+        elif fn == 'pop':
+            node = frontier.pop()
+
+        explored.add(node.state)
+        # expand
+        for action in problem.actions(node.state):
+            child = node.child_node(problem, action)
+            if child.state not in explored and child not in frontier:
+                # goal check
+                if problem.goal_test(child.state):
+                    return child, "done"
+                frontier.append(child)
+        return node, "pass"
+
+
 def bfs(frontier, end):
     # failure check
     if not frontier:
