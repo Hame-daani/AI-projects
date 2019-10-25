@@ -41,3 +41,37 @@ class Node:
             path.append(node)
             node = node.parent
         return list(reversed(path))
+
+
+class OneDotProblem(Problem):
+    def __init__(self, initial, goal=None, grid=[]):
+        Problem.__init__(self, initial, goal)
+        self.grid = grid
+
+    def actions(self, state):
+        possible_acts = ["UP", "DOWN", "RIGHT", "LEFT"]
+        if state.i == 0:
+            possible_acts.remove("LEFT")
+        if state.j == 0:
+            possible_acts.remove("UP")
+        if state.i == len(self.grid):
+            possible_acts.remove("RIGHT")
+        if state.j == len(self.grid):
+            possible_acts.remove("DOWN")
+        return possible_acts
+
+    def result(self, state, action):
+        old_i = state.i
+        old_j = state.j
+        if action == "UP":
+            new_state = self.grid[old_j-1][old_i]
+        if action == "DOWN":
+            new_state = self.grid[old_j+1][old_i]
+        if action == "RIGHT":
+            new_state = self.grid[old_j][old_i+1]
+        if action == "LEFT":
+            new_state = self.grid[old_j][old_i-1]
+        return new_state
+
+    def step_cost(self, current_cost, fRom, action, to):
+        return current_cost + to.weight
