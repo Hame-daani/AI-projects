@@ -1,4 +1,4 @@
-from .difinitions import Problem
+from .difinitions import Problem, PriorityQueue, Node
 
 
 def graph_search(problem, frontier, explored, fn):
@@ -35,32 +35,29 @@ def depth_fs(problem, frontier, explored):
     return node, result
 
 
-def heuristic(a, b):
-    return abs(a.i-b.i) + abs(a.j-b.j)
-
-
-def astar(frontier, end):
+def best_fs(problem, frontier, explored, fn):
     # failure check
     if not frontier:
         return None, "failure"
     else:
-        # choose l
-        current = None
-        for fro in frontier:
-            if not current or current.f > fro.f:
-                current = fro
-        # solution check
-        if current == end:
-            return current, "done"
+        # choosing
+        node = frontier.pop()
+        # goal check
+        if problem.goal_test(node.state):
+            return node, "done"
+        explored.add(node.state)
         # expand
-        current.explored = True
-        frontier.remove(current)
-        for n in current.neighbors:
-            if not n.explored and not n.isWall:
-                if n.g > current.g+1:
-                    n.previous = current
-                    n.g = current.g+1
-                    n.f = n.g+heuristic(n, end)
-                    if not n in frontier:
-                        frontier.append(n)
-        return current, "pass"
+        for action in problem.actions(node.state):
+            child = node.child_node(problem, action)
+            if child.state not in explored and child not in frontier:
+                frontier.append(child)
+            elif child in frontier:
+                if fn(child) < frontier[child]:
+                    del frontier[child]
+                    frontier.append(child)
+        return node, "pass"
+
+
+def astar(problem, frontier, explored):
+    node, result = best_fs(problem, frontier, explored, problem.h)
+    return node, result

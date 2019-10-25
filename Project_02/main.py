@@ -1,6 +1,6 @@
 from core.objects import Cell
-from core.difinitions import OneDotProblem, Node, AllDotsProblem, State
-from core.algorithms import breadth_fs
+from core.difinitions import OneDotProblem, Node, AllDotsProblem, State, PriorityQueue
+from core.algorithms import breadth_fs, astar
 from random import randint
 from core import utils
 
@@ -26,18 +26,17 @@ problem = None
 grid = []
 
 
-
 def initial_state():
     global grid, num_cells, frontier, explored, problem
     # initial the grid
     start = grid[num_cells/2][num_cells/2]
     start.makeit('start')
 
-    # problem = utils.create_oneDotProblem(start, grid)
+    problem = utils.create_oneDotProblem(start, grid)
 
-    problem = utils.create_allDotsProblem(start, num_cells, grid)
+    # problem = utils.create_allDotsProblem(start, num_cells, grid)
 
-    frontier = []
+    frontier = PriorityQueue('min', problem.h)
     explored.clear()
     frontier.append(Node(state=problem.initial_state))
 
@@ -57,9 +56,9 @@ def setup():
 
 
 def draw():
-    global grid, speed, frontier, doWhat, problem, explored, noloop
+    global grid, speed, frontier, problem, explored
     # calculation
-    node, result = breadth_fs(problem, frontier, explored)
+    node, result = astar(problem, frontier, explored)
     # result check
     if result == 'done' or result == 'failure':
         noLoop()
