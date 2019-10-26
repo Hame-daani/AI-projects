@@ -1,27 +1,33 @@
-from random import uniform,randint
+from random import uniform, randint
 
 startImg = loadImage("res/pacman.png")
+# color for text
 black = color(0, 0, 0)
 
+
 class Cell(object):
+    """
+    Cell class used as our enviroment to explore and visualize.
+    """
     def __init__(self, i, j, d):
-        self.i = i
-        self.j = j
+        self.i = i  # x cordinate
+        self.j = j  # y cordinate
+        self.size = d  # size of cell to be drawn
         self.isWall = False
-        self.explored = False
-        self.size = d
         self.isStart = False
         self.isEnd = False
-        # add walls
+        self.weight = randint(1, 10)
+        # make 20 percent of cells wall
         if uniform(0, 1) < 0.2:
             self.isWall = True
-        self.weight = randint(1,10)
-
 
     def __repr__(self):
         return "({},{})".format(self.i, self.j)
 
     def show(self, color):
+        """
+        draw our cell on the display. at it's 'i' and 'j'.
+        """
         fill(color)
         noStroke()
         if self.isStart:
@@ -36,10 +42,13 @@ class Cell(object):
         fill(black)
         textSize(self.size/5)
         if self.weight:
-            text(self.weight,self.i*self.size+self.size/3,
-                    self.j*self.size+self.size/2)
+            text(self.weight, self.i*self.size+self.size/3,
+                 self.j*self.size+self.size/2)
 
-    def makeit(self,what):
+    def makeit(self, what):
+        """
+        make our cell start or end point.
+        """
         if what == 'start':
             self.isStart = True
             self.isEnd = False

@@ -2,6 +2,9 @@ from config import *
 
 
 def draw_path(node):
+    """
+    draw a green path as our solution.
+    """
     path = [n.state for n in node.path()]
     for n in path:
         n.cell.show(green)
@@ -10,17 +13,26 @@ def draw_path(node):
 
 
 def draw_frontier(frontier):
+    """
+    draw our frontier in current state.
+    """
     for i, n in frontier:
         cell = n.state.cell
         cell.show(light_blue)
 
 
 def draw_explored(explored):
+    """
+    draw explored cells.
+    """
     for s in explored:
         s.cell.show(blue)
 
 
 def draw_grid(grid):
+    """
+    draw our grid based on what cell is.
+    """
     for row in grid:
         for cell in row:
             if cell.isWall:
@@ -32,6 +44,9 @@ def draw_grid(grid):
 
 
 def create_allDotsProblem(start, grid):
+    """
+    Get a start point and grid, and return a problem with randm dots as targets.
+    """
     from core.difinitions import AllDotsProblem, State
     from random import randint
     targets = []

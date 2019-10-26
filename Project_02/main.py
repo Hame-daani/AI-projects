@@ -1,7 +1,7 @@
 from core.objects import Cell
-from core.difinitions import OneDotProblem, Node, AllDotsProblem, State, PriorityQueue
-from core.algorithms import breadth_fs, astar
-from random import randint
+from core.difinitions import Node, PriorityQueue
+from core.algorithms import astar
+from random import randint, uniform
 from core import utils
 from config import *
 
@@ -11,36 +11,48 @@ frontier = None
 explored = set()
 problem = None
 grid = []
+dimension = 0
 
 
 def initial_state():
-    global grid, num_cells, frontier, explored, problem
-    # initial the grid
-    start = grid[num_cells/2][num_cells/2]
-    start.makeit('start')
-
-    problem = utils.create_allDotsProblem(start, grid)
-
-    frontier = PriorityQueue('min', problem.h)
-    explored.clear()
-    frontier.append(Node(state=problem.initial_state))
-
-
-def setup():
-    global screen_size, grid
-    dimension = width / num_cells
+    """
+    initialize the state of program.
+    """
+    global grid, num_cells, frontier, explored, problem, dimension
+    # build the grid
     grid = [
         [
             Cell(i, j, dimension) for i in range(num_cells)
         ]
         for j in range(num_cells)
     ]
+    # choose start point
+    start = grid[num_cells/2][num_cells/2]
+    start.makeit('start')
+    # create our problem to be solved
+    problem = utils.create_allDotsProblem(start, grid)
+    # clear our frontier and explored
+    frontier = PriorityQueue('min', problem.h)
+    explored.clear()
+    # add start node to frontier
+    frontier.append(Node(state=problem.initial_state))
+
+
+def setup():
+    """
+    used in processing. run once at start.
+    """
+    global screen_size, grid, dimension
+    dimension = width / num_cells
     initial_state()
     size(screen_size, screen_size)
     frameRate(speed)
 
 
 def draw():
+    """
+    used in processing. run based on our frameRate in second.
+    """
     global grid, frontier, problem, explored
     # calculation
     node, result = astar(problem, frontier, explored)
@@ -48,16 +60,13 @@ def draw():
     if result == 'done' or result == 'failure':
         print(result)
         noLoop()
-    # draw grid
+    # draw
     utils.draw_grid(grid)
-    # draw explored
     utils.draw_explored(explored)
-    # draw frontier
     utils.draw_frontier(frontier)
-    # draw current
+    # draw current node
     if result != "failure":
         node.state.cell.show(red)
-    # draw path
     if result == "done":
         utils.draw_path(node)
 
