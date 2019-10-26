@@ -49,7 +49,7 @@ def create_allDotsProblem(start, num_cells, grid):
     from core.difinitions import AllDotsProblem, State
     from random import randint
     targets = []
-    for i in range(10):
+    for i in range(4):
         dot = grid[randint(0, num_cells-1)][randint(0, num_cells-1)]
         dot.makeit('end')
         targets.append(dot)

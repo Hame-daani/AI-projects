@@ -14,7 +14,7 @@ red = color(255, 0, 0)
 yellow = color(255, 255, 0)
 
 # config
-num_cells = 50
+num_cells = 10
 dimension = 0
 screen_size = 800
 speed = 100
@@ -32,9 +32,9 @@ def initial_state():
     start = grid[num_cells/2][num_cells/2]
     start.makeit('start')
 
-    problem = utils.create_oneDotProblem(start, grid)
+    # problem = utils.create_oneDotProblem(start, grid)
 
-    # problem = utils.create_allDotsProblem(start, num_cells, grid)
+    problem = utils.create_allDotsProblem(start, num_cells, grid)
     frontier = PriorityQueue('min', problem.h)
     explored.clear()
     frontier.append(Node(state=problem.initial_state))

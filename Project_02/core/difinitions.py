@@ -181,15 +181,17 @@ class AllDotsProblem(OneDotProblem):
                     dist_to1 = self.calcDist2(a, node.state.cell)
                     dist_to2 = self.calcDist2(b, node.state.cell)
                     return min([dist_to1, dist_to2])
-                    # h function
+        # h function
         if len(node.state.targets) == 1:
             a = node.state.cell
             b = node.state.targets[0]
             return node.path_cost + (abs(a.i-b.i) + abs(a.j-b.j))
-        elif not len(node.state.targets) == 0:
+        elif len(node.state.targets) != 0:
             x = dist_two_furthest_dots()
             y = curr_pos_to_close_two(x)
             return x + y
+        else:
+            return 0
 
 
 class PriorityQueue:
