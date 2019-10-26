@@ -51,7 +51,9 @@ def create_allDotsProblem(start, grid):
     from random import randint
     targets = []
     for i in range(num_dots):
-        dot = grid[randint(0, num_cells-1)][randint(0, num_cells-1)]
+        dot = start
+        while dot == start:
+            dot = grid[randint(0, num_cells-1)][randint(0, num_cells-1)]
         dot.makeit('end')
         targets.append(dot)
     problem = AllDotsProblem(initial=State(start, targets), grid=grid)

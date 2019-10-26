@@ -18,7 +18,7 @@ class Cell(object):
         self.isEnd = False
         self.weight = randint(1, 10)
         # make 20 percent of cells wall
-        if uniform(0, 1) < 0.2:
+        if uniform(0, 1) < 0.3:
             self.isWall = True
 
     def __repr__(self):

@@ -18,7 +18,20 @@ def initial_state():
     """
     initialize the state of program.
     """
-    global grid, num_cells, frontier, explored, problem, dimension
+    global frontier, explored, problem
+    # clear our frontier and explored
+    frontier = PriorityQueue('min', problem.h)
+    explored.clear()
+    # add start node to frontier
+    frontier.append(Node(state=problem.initial_state))
+
+
+def setup():
+    """
+    used in processing. run once at start.
+    """
+    global screen_size, grid, dimension, problem
+    dimension = width / num_cells
     # build the grid
     grid = [
         [
@@ -31,19 +44,6 @@ def initial_state():
     start.makeit('start')
     # create our problem to be solved
     problem = utils.create_allDotsProblem(start, grid)
-    # clear our frontier and explored
-    frontier = PriorityQueue('min', problem.h)
-    explored.clear()
-    # add start node to frontier
-    frontier.append(Node(state=problem.initial_state))
-
-
-def setup():
-    """
-    used in processing. run once at start.
-    """
-    global screen_size, grid, dimension
-    dimension = width / num_cells
     initial_state()
     size(screen_size, screen_size)
     frameRate(speed)
