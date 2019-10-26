@@ -41,7 +41,7 @@ def create_oneDotProblem(start, grid):
     from core.difinitions import OneDotProblem, State
     end = grid[-1][-1]
     end.makeit('end')
-    problem = OneDotProblem(initial=State(start), goal=State(end), grid=grid)
+    problem = OneDotProblem(initial=State(start,[end]), grid=grid)
     return problem
 
 
@@ -49,9 +49,9 @@ def create_allDotsProblem(start, num_cells, grid):
     from core.difinitions import AllDotsProblem, State
     from random import randint
     targets = []
-    for i in range(4):
+    for i in range(3):
         dot = grid[randint(0, num_cells-1)][randint(0, num_cells-1)]
         dot.makeit('end')
         targets.append(dot)
-    problem = AllDotsProblem(initial=State(start, targets), goal=[], grid=grid)
+    problem = AllDotsProblem(initial=State(start, targets), grid=grid)
     return problem

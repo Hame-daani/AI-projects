@@ -35,6 +35,7 @@ def initial_state():
     # problem = utils.create_oneDotProblem(start, grid)
 
     problem = utils.create_allDotsProblem(start, num_cells, grid)
+
     frontier = PriorityQueue('min', problem.h)
     explored.clear()
     frontier.append(Node(state=problem.initial_state))
@@ -60,6 +61,7 @@ def draw():
     node, result = astar(problem, frontier, explored)
     # result check
     if result == 'done' or result == 'failure':
+        print(result)
         noLoop()
     # draw grid
     utils.draw_grid(grid)
@@ -68,7 +70,8 @@ def draw():
     # draw frontier
     utils.draw_frontier(frontier)
     # draw current
-    node.state.cell.show(red)
+    if result != "failure":
+        node.state.cell.show(red)
     # draw path
     if result == "done":
         utils.draw_path(node)

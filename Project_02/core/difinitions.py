@@ -1,7 +1,7 @@
 import heapq
 
 
-class Problem:
+class Problem(object):
     def __init__(self, initial, goal=None):
         self.initial_state = initial
         self.goal = goal
@@ -57,7 +57,7 @@ class Node:
 
 
 class OneDotProblem(Problem):
-    def __init__(self, initial, goal=None, grid=[]):
+    def __init__(self, initial, goal=[], grid=[]):
         Problem.__init__(self, initial, goal)
         self.grid = grid
 
@@ -74,47 +74,8 @@ class OneDotProblem(Problem):
             possible_acts.remove("DOWN")
         return possible_acts
 
-    def result(self, state, action):
-        old_i = state.cell.i
-        old_j = state.cell.j
-        if action == "UP":
-            return State(self.grid[old_j-1][old_i])
-        if action == "DOWN":
-            return State(self.grid[old_j+1][old_i])
-        if action == "RIGHT":
-            return State(self.grid[old_j][old_i+1])
-        if action == "LEFT":
-            return State(self.grid[old_j][old_i-1])
-
-    def step_cost(self, current_cost, fRom, action, to):
-        return current_cost + to.cell.weight
-
-    def h(self, node):
-        a = node.state.cell
-        b = self.goal.cell
-        return node.path_cost + (abs(a.i-b.i) + abs(a.j-b.j))
-
-
-class State:
-    def __init__(self, cell, targets=[]):
-        self.cell = cell
-        self.targets = targets
-
-    def __eq__(self, value):
-        return self.cell == value.cell and self.targets == value.targets
-
-    def __hash__(self):
-        return hash((self.cell, frozenset(self.targets)))
-
-    def __repr__(self):
-        return "{},{}".format(self.cell, self.targets)
-
-
-class AllDotsProblem(OneDotProblem):
-    def __init__(self, initial, goal=None, grid=[]):
-        OneDotProblem.__init__(self, initial, goal=goal, grid=grid)
-        self.dotsDict = dict()
-        self.calcDotsDistDict()
+    def goal_test(self, state):
+        return state.targets == self.goal
 
     def result(self, state, action):
         cell, targets = state.cell, state.targets
@@ -133,12 +94,41 @@ class AllDotsProblem(OneDotProblem):
             new_targets.remove(new_cell)
         return State(new_cell, new_targets)
 
-    def goal_test(self, state):
-        return len(state.targets) == 0
+    def step_cost(self, current_cost, fRom, action, to):
+        return current_cost + to.cell.weight
+
+    def h(self, node):
+        if len(node.state.targets) > 0:
+            a = node.state.cell
+            b = node.state.targets[0]
+            return node.path_cost + (abs(a.i-b.i) + abs(a.j-b.j))
+        else:
+            return 0
+
+
+class State:
+    def __init__(self, cell, targets=[]):
+        self.cell = cell
+        self.targets = targets
+
+    def __eq__(self, value):
+        return self.cell == value.cell and self.targets == value.targets
+
+    def __hash__(self):
+        return hash((self.cell, frozenset(self.targets)))
+
+    def __repr__(self):
+        return "{},{}".format(self.cell, self.targets)
+
+
+class AllDotsProblem(OneDotProblem):
+    def __init__(self, initial, goal=[], grid=[]):
+        OneDotProblem.__init__(self, initial, goal=goal, grid=grid)
+        self.dotsDict = dict()
+        self.calcDotsDistDict()
 
     def calcDist2(self, a, b):
-        prob = OneDotProblem(initial=State(
-            a), goal=State(b), grid=self.grid)
+        prob = OneDotProblem(initial=State(a, [b]), grid=self.grid)
         frontier = PriorityQueue('min', prob.h)
         explored = set()
         frontier.append(Node(state=prob.initial_state))
@@ -172,8 +162,8 @@ class AllDotsProblem(OneDotProblem):
                 if a in valids and b in valids:
                     l.append(self.dotsDict.get(key))
             return max(l)
-        # second function
 
+        # second function
         def curr_pos_to_close_two(x):
             for k, v in self.dotsDict.items():
                 if v == x:
@@ -183,9 +173,7 @@ class AllDotsProblem(OneDotProblem):
                     return min([dist_to1, dist_to2])
         # h function
         if len(node.state.targets) == 1:
-            a = node.state.cell
-            b = node.state.targets[0]
-            return node.path_cost + (abs(a.i-b.i) + abs(a.j-b.j))
+            return super(AllDotsProblem, self).h(node)
         elif len(node.state.targets) != 0:
             x = dist_two_furthest_dots()
             y = curr_pos_to_close_two(x)
