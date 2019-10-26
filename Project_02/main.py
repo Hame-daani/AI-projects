@@ -3,21 +3,8 @@ from core.difinitions import OneDotProblem, Node, AllDotsProblem, State, Priorit
 from core.algorithms import breadth_fs, astar
 from random import randint
 from core import utils
+from config import *
 
-# colors
-black = color(0, 0, 0)
-green = color(0, 255, 0)
-blue = color(0, 0, 255)
-light_blue = color(102, 255, 255)
-white = color(255)
-red = color(255, 0, 0)
-yellow = color(255, 255, 0)
-
-# config
-num_cells = 10
-dimension = 0
-screen_size = 800
-speed = 100
 
 # global vars
 frontier = None
@@ -32,9 +19,7 @@ def initial_state():
     start = grid[num_cells/2][num_cells/2]
     start.makeit('start')
 
-    # problem = utils.create_oneDotProblem(start, grid)
-
-    problem = utils.create_allDotsProblem(start, num_cells, grid)
+    problem = utils.create_allDotsProblem(start, grid)
 
     frontier = PriorityQueue('min', problem.h)
     explored.clear()
@@ -42,7 +27,7 @@ def initial_state():
 
 
 def setup():
-    global screen_size, grid, dimension
+    global screen_size, grid
     dimension = width / num_cells
     grid = [
         [
@@ -56,7 +41,7 @@ def setup():
 
 
 def draw():
-    global grid, speed, frontier, problem, explored
+    global grid, frontier, problem, explored
     # calculation
     node, result = astar(problem, frontier, explored)
     # result check

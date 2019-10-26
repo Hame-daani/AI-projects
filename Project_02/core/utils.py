@@ -1,10 +1,4 @@
-black = color(0, 0, 0)
-green = color(0, 255, 0)
-blue = color(0, 0, 255)
-light_blue = color(102, 255, 255)
-white = color(255)
-red = color(255, 0, 0)
-yellow = color(255, 255, 0)
+from config import *
 
 
 def draw_path(node):
@@ -16,7 +10,7 @@ def draw_path(node):
 
 
 def draw_frontier(frontier):
-    for i,n in frontier:
+    for i, n in frontier:
         cell = n.state.cell
         cell.show(light_blue)
 
@@ -37,19 +31,11 @@ def draw_grid(grid):
                 cell.show(white)
 
 
-def create_oneDotProblem(start, grid):
-    from core.difinitions import OneDotProblem, State
-    end = grid[-1][-1]
-    end.makeit('end')
-    problem = OneDotProblem(initial=State(start,[end]), grid=grid)
-    return problem
-
-
-def create_allDotsProblem(start, num_cells, grid):
+def create_allDotsProblem(start, grid):
     from core.difinitions import AllDotsProblem, State
     from random import randint
     targets = []
-    for i in range(3):
+    for i in range(num_dots):
         dot = grid[randint(0, num_cells-1)][randint(0, num_cells-1)]
         dot.makeit('end')
         targets.append(dot)

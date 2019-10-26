@@ -9,7 +9,6 @@ class Cell(object):
         self.j = j
         self.isWall = False
         self.explored = False
-        self.neighbors = []
         self.size = d
         self.isStart = False
         self.isEnd = False
