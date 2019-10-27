@@ -206,8 +206,6 @@ class AllDotsProblem(OneDotProblem):
                         self.dotsDict[a, b] = self.dotsDict[b, a]
                     else:
                         self.dotsDict[a, b] = self.calcDist2(a, b)
-                        if not self.dotsDict[a, b] or self.dotsDict[a, b] == 0:
-                            print("Error calc dict: ",a,b)
 
     def h(self, node):
         """
@@ -229,9 +227,9 @@ class AllDotsProblem(OneDotProblem):
                 a, b = key
                 if a in valids and b in valids:
                     l.append(self.dotsDict.get(key))
-            m = max(l)
-            if m == 0:
+            if not l:
                 print("Error two furtehst: ", keys, valids)
+            m = max(l)
             return m
 
         # second function
@@ -246,7 +244,7 @@ class AllDotsProblem(OneDotProblem):
                     dist_to2 = self.calcDist2(b, node.state.cell)
                     m = min([dist_to1, dist_to2])
                     if m == 0 or not m:
-                        print("Error curr to close: ",a,b)
+                        print("Error curr to close: ",node.state.cell)
                     return m
         # h function
         if len(node.state.targets) == 1:

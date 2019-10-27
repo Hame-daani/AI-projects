@@ -1,6 +1,6 @@
-num_cells = 20
-num_dots = 4
-screen_size = 800
+num_cells = 10
+num_dots = 3
+screen_size = 500
 speed = 1000
 
 # colors

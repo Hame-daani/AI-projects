@@ -9,14 +9,15 @@ def draw_path(node):
     for n in path:
         n.cell.show(green)
     print(node.solution())
-    print("Total Cost: "+str(node.path_cost))
 
 
 def draw_frontier(frontier):
     """
     draw our frontier in current state.
     """
-    for i, n in frontier:
+    for n in frontier:
+        if type(n) == tuple:
+            i, n = n
         cell = n.state.cell
         cell.show(light_blue)
 
