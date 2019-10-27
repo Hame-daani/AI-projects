@@ -227,7 +227,7 @@ class AllDotsProblem(OneDotProblem):
                 a, b = key
                 if a in valids and b in valids:
                     l.append(self.dotsDict.get(key))
-            if not l:
+            if len(l) == 0:
                 print("Error two furtehst: ", keys, valids)
             m = max(l)
             return m
@@ -244,7 +244,7 @@ class AllDotsProblem(OneDotProblem):
                     dist_to2 = self.calcDist2(b, node.state.cell)
                     m = min([dist_to1, dist_to2])
                     if m == 0 or not m:
-                        print("Error curr to close: ",node.state.cell)
+                        print("Error curr to close: ",node.state.cell,a,b)
                     return m
         # h function
         if len(node.state.targets) == 1:

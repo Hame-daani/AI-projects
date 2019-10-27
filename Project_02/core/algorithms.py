@@ -25,16 +25,6 @@ def graph_search(problem, frontier, explored, fn):
         return node, "pass"
 
 
-def breadth_fs(problem, frontier, explored):
-    node, result = graph_search(problem, frontier, explored, fn="popleft")
-    return node, result
-
-
-def depth_fs(problem, frontier, explored):
-    node, result = graph_search(problem, frontier, explored, fn="pop")
-    return node, result
-
-
 def best_fs(problem, frontier, explored, fn):
     # failure check
     if not frontier:
@@ -58,6 +48,21 @@ def best_fs(problem, frontier, explored, fn):
         return node, "pass"
 
 
+def breadth_fs(problem, frontier, explored):
+    node, result = graph_search(problem, frontier, explored, fn="popleft")
+    return node, result
+
+
+def depth_fs(problem, frontier, explored):
+    node, result = graph_search(problem, frontier, explored, fn="pop")
+    return node, result
+
+
 def astar(problem, frontier, explored):
-    node, result = best_fs(problem, frontier, explored, problem.h)
+    node, result = best_fs(problem, frontier, explored, lambda n: n.path_cost+problem.h(n))
+    return node, result
+
+
+def uniform_cost_search(problem, frontier, explored):
+    node, result = best_fs(problem, frontier, explored, lambda n: n.path_cost)
     return node, result

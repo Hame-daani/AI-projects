@@ -1,7 +1,7 @@
 num_cells = 10
-num_dots = 3
+num_dots = 4
 screen_size = 500
-speed = 1000
+speed = 100
 
 # colors
 black = color(0, 0, 0)

@@ -1,6 +1,6 @@
 from core.objects import Cell
 from core.difinitions import Node, PriorityQueue
-from core.algorithms import astar, breadth_fs
+from core.algorithms import astar, breadth_fs, uniform_cost_search
 from random import randint, uniform
 from core import utils
 from config import *
@@ -13,7 +13,7 @@ problem = None
 grid = []
 dimension = 0
 total_nodes = 0
-algorithms = [astar, breadth_fs]
+algorithms = [breadth_fs, astar,  uniform_cost_search]
 curr_alg = 0
 
 
@@ -21,11 +21,13 @@ def initial_state():
     """
     initialize the state of program.
     """
-    global frontier, explored, problem, algorithms, curr_alg,total_nodes
+    global frontier, explored, problem, algorithms, curr_alg, total_nodes
     total_nodes = 0
     # clear our frontier and explored
     if algorithms[curr_alg] == astar:
-        frontier = PriorityQueue('min', problem.h)
+        frontier = PriorityQueue('min', lambda n: n.path_cost+problem.h(n))
+    elif algorithms[curr_alg] == uniform_cost_search:
+        frontier = PriorityQueue('min', lambda n: n.path_cost)
     else:
         frontier = []
     explored.clear()
