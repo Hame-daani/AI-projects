@@ -244,7 +244,7 @@ class AllDotsProblem(OneDotProblem):
                     dist_to2 = self.calcDist2(b, node.state.cell)
                     m = min([dist_to1, dist_to2])
                     if m == 0 or not m:
-                        print("Error curr to close: ",node.state.cell,a,b)
+                        return float('inf')
                     return m
         # h function
         if len(node.state.targets) == 1:

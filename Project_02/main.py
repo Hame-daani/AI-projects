@@ -4,7 +4,7 @@ from core.algorithms import astar, breadth_fs, uniform_cost_search, iterative_de
 from random import randint, uniform
 from core import utils
 from config import *
-
+import time
 
 # global vars
 frontier = None
@@ -13,16 +13,18 @@ problem = None
 grid = []
 dimension = 0
 total_nodes = 0
-algorithms = [iterative_deeping_search, breadth_fs, uniform_cost_search, astar]
+algorithms = [breadth_fs, uniform_cost_search, astar, iterative_deeping_search]
 curr_alg = 0
+start_time = 0
 
 
 def initial_state():
     """
     initialize the state of program.
     """
-    global frontier, explored, problem, algorithms, curr_alg, total_nodes
+    global frontier, explored, problem, algorithms, curr_alg, total_nodes, start_time
     total_nodes = 0
+    start_time = time.time()
     # clear our frontier and explored
     if algorithms[curr_alg] == astar:
         frontier = PriorityQueue('min', lambda n: n.path_cost+problem.h(n))
@@ -63,7 +65,7 @@ def draw():
     """
     used in processing. run based on our frameRate in second.
     """
-    global grid, frontier, problem, explored, total_nodes, algorithms, curr_alg
+    global grid, frontier, problem, explored, total_nodes, algorithms, curr_alg, start_time
     # draw
     utils.draw_grid(grid)
     # calculation
@@ -82,6 +84,7 @@ def draw():
     if result == "done":
         print("Total Nodes: " + str(total_nodes))
         print("Total Cost: "+str(node.path_cost))
+        print("Total time: ")+str(time.time()-start_time)
         utils.draw_path(node)
 
 
