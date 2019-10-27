@@ -1,6 +1,6 @@
 from core.objects import Cell
 from core.difinitions import Node, PriorityQueue
-from core.algorithms import astar
+from core.algorithms import astar, breadth_fs
 from random import randint, uniform
 from core import utils
 from config import *
@@ -12,6 +12,7 @@ explored = set()
 problem = None
 grid = []
 dimension = 0
+total_nodes = 0
 
 
 def initial_state():
@@ -53,9 +54,10 @@ def draw():
     """
     used in processing. run based on our frameRate in second.
     """
-    global grid, frontier, problem, explored
+    global grid, frontier, problem, explored, total_nodes
     # calculation
     node, result = astar(problem, frontier, explored)
+    total_nodes += 1
     # result check
     if result == 'done' or result == 'failure':
         print(result)
@@ -68,6 +70,7 @@ def draw():
     if result != "failure":
         node.state.cell.show(red)
     if result == "done":
+        print("Total Nodes: " + str(total_nodes))
         utils.draw_path(node)
 
 

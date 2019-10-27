@@ -191,6 +191,9 @@ class AllDotsProblem(OneDotProblem):
             node, result = astar(prob, frontier, explored)
             if result == "done":
                 return node.path_cost
+            elif result == "failure":
+                print("Error dist 2: ",a,b)
+                return 0
 
     def calcDotsDistDict(self):
         """
@@ -203,6 +206,8 @@ class AllDotsProblem(OneDotProblem):
                         self.dotsDict[a, b] = self.dotsDict[b, a]
                     else:
                         self.dotsDict[a, b] = self.calcDist2(a, b)
+                        if not self.dotsDict[a, b] or self.dotsDict[a, b] == 0:
+                            print("Error calc dict: ",a,b)
 
     def h(self, node):
         """
@@ -224,7 +229,10 @@ class AllDotsProblem(OneDotProblem):
                 a, b = key
                 if a in valids and b in valids:
                     l.append(self.dotsDict.get(key))
-            return max(l)
+            m = max(l)
+            if m == 0:
+                print("Error two furtehst: ", keys, valids)
+            return m
 
         # second function
         def curr_pos_to_close_two(x):
@@ -236,7 +244,10 @@ class AllDotsProblem(OneDotProblem):
                     a, b = k
                     dist_to1 = self.calcDist2(a, node.state.cell)
                     dist_to2 = self.calcDist2(b, node.state.cell)
-                    return min([dist_to1, dist_to2])
+                    m = min([dist_to1, dist_to2])
+                    if m == 0 or not m:
+                        print("Error curr to close: ",a,b)
+                    return m
         # h function
         if len(node.state.targets) == 1:
             return super(AllDotsProblem, self).h(node)

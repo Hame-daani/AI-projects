@@ -9,7 +9,7 @@ def draw_path(node):
     for n in path:
         n.cell.show(green)
     print(node.solution())
-    print(node.path_cost)
+    print("Total Cost: "+str(node.path_cost))
 
 
 def draw_frontier(frontier):
