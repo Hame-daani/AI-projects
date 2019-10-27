@@ -1,6 +1,6 @@
 from core.objects import Cell
 from core.difinitions import Node, PriorityQueue
-from core.algorithms import astar, breadth_fs, uniform_cost_search
+from core.algorithms import astar, breadth_fs, uniform_cost_search, iterative_deeping_search
 from random import randint, uniform
 from core import utils
 from config import *
@@ -13,7 +13,7 @@ problem = None
 grid = []
 dimension = 0
 total_nodes = 0
-algorithms = [breadth_fs, uniform_cost_search, astar]
+algorithms = [iterative_deeping_search, breadth_fs, uniform_cost_search, astar]
 curr_alg = 0
 
 
@@ -64,6 +64,8 @@ def draw():
     used in processing. run based on our frameRate in second.
     """
     global grid, frontier, problem, explored, total_nodes, algorithms, curr_alg
+    # draw
+    utils.draw_grid(grid)
     # calculation
     node, result = algorithms[curr_alg](problem, frontier, explored)
     total_nodes += 1
@@ -72,7 +74,6 @@ def draw():
         print(result)
         noLoop()
     # draw
-    utils.draw_grid(grid)
     utils.draw_explored(explored)
     utils.draw_frontier(frontier)
     # draw current node
