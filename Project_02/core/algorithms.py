@@ -59,7 +59,8 @@ def depth_fs(problem, frontier, explored):
 
 
 def astar(problem, frontier, explored):
-    node, result = best_fs(problem, frontier, explored, lambda n: n.path_cost+problem.h(n))
+    node, result = best_fs(problem, frontier, explored,
+                           lambda n: n.path_cost+problem.h(n))
     return node, result
 
 

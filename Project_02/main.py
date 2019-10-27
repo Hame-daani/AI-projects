@@ -13,7 +13,7 @@ problem = None
 grid = []
 dimension = 0
 total_nodes = 0
-algorithms = [breadth_fs, astar,  uniform_cost_search]
+algorithms = [breadth_fs, uniform_cost_search, astar]
 curr_alg = 0
 
 
