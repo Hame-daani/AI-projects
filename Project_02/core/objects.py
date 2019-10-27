@@ -9,17 +9,16 @@ class Cell(object):
     """
     Cell class used as our enviroment to explore and visualize.
     """
-    def __init__(self, i, j, d):
+
+    def __init__(self, i, j, w, h):
         self.i = i  # x cordinate
         self.j = j  # y cordinate
-        self.size = d  # size of cell to be drawn
+        self.w = w
+        self.h = h
         self.isWall = False
         self.isStart = False
         self.isEnd = False
-        self.weight = randint(1, 10)
-        # make 20 percent of cells wall
-        if uniform(0, 1) < 0.3:
-            self.isWall = True
+        self.weight = 0
 
     def __repr__(self):
         return "({},{})".format(self.i, self.j)
@@ -32,18 +31,18 @@ class Cell(object):
         noStroke()
         if self.isStart:
             global startImg
-            image(startImg, self.i*self.size, self.j *
-                  self.size, self.size-1, self.size-1)
+            image(startImg, self.i*self.w, self.j *
+                  self.h, self.w-1, self.h-1)
         elif self.isEnd:
-            circle(self.i*self.size+self.size/2, self.j *
-                   self.size+self.size/2, self.size/2)
+            circle(self.i*self.w+self.w/2, self.j *
+                   self.h+self.h/2, self.w/2)
         else:
-            rect(self.i*self.size, self.j*self.size, self.size-1, self.size-1)
+            rect(self.i*self.w, self.j*self.h, self.w-1, self.h-1)
         fill(black)
-        textSize(self.size/5)
+        textSize(self.w/5)
         if self.weight:
-            text(self.weight, self.i*self.size+self.size/3,
-                 self.j*self.size+self.size/2)
+            text(self.weight, self.i*self.w+self.w/3,
+                 self.j*self.h+self.h/2)
 
     def makeit(self, what):
         """

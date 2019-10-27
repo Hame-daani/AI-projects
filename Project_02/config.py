@@ -1,5 +1,6 @@
-num_cells = 10
-num_dots = 4
+row_cells = 10
+column_cells = 10
+num_dots = 3
 screen_size = 500
 speed = 100
 

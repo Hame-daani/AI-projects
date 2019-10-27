@@ -11,7 +11,6 @@ frontier = None
 explored = set()
 problem = None
 grid = []
-dimension = 0
 total_nodes = 0
 algorithms = [breadth_fs, uniform_cost_search, astar, iterative_deeping_search]
 curr_alg = 0
@@ -41,18 +40,21 @@ def setup():
     """
     used in processing. run once at start.
     """
-    global screen_size, grid, dimension, problem, algorithms, curr_alg
-    dimension = width / num_cells
+    global screen_size, grid, problem, algorithms, curr_alg
+    w = width / column_cells
+    h = height / row_cells
+
     # build the grid
     grid = [
         [
-            Cell(i, j, dimension) for i in range(num_cells)
+            Cell(i, j, w, h) for i in range(column_cells)
         ]
-        for j in range(num_cells)
+        for j in range(row_cells)
     ]
-    # choose start point
-    start = grid[num_cells/2][num_cells/2]
-    start.makeit('start')
+
+    start = utils.build_grid_random(grid)
+    # start = utils.biuld_grid_from_file(grid)
+
     # create our problem to be solved
     problem = utils.create_allDotsProblem(start, grid)
     initial_state()

@@ -1,4 +1,5 @@
 import heapq
+from core.utils import row_cells, column_cells
 
 
 class Problem(object):
@@ -101,9 +102,9 @@ class OneDotProblem(Problem):
             possible_acts.remove("LEFT")
         if cell.j == 0 or self.grid[cell.j-1][cell.i].isWall:
             possible_acts.remove("UP")
-        if cell.i == len(self.grid)-1 or self.grid[cell.j][cell.i+1].isWall:
+        if cell.i == column_cells-1 or self.grid[cell.j][cell.i+1].isWall:
             possible_acts.remove("RIGHT")
-        if cell.j == len(self.grid)-1 or self.grid[cell.j+1][cell.i].isWall:
+        if cell.j == row_cells-1 or self.grid[cell.j+1][cell.i].isWall:
             possible_acts.remove("DOWN")
         return possible_acts
 
@@ -192,7 +193,7 @@ class AllDotsProblem(OneDotProblem):
             if result == "done":
                 return node.path_cost
             elif result == "failure":
-                print("Error dist 2: ",a,b)
+                print("Error dist 2: ", a, b)
                 return 0
 
     def calcDotsDistDict(self):
