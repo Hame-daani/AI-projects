@@ -1,9 +1,8 @@
 from core.objects import Cell
 from core.difinitions import Node
 from core.algorithms import astar, breadth_fs, uniform_cost_search, iterative_deeping_search
-from random import randint, uniform
 from core import utils
-from config import *
+from config import column_cells, row_cells, speed, screen_height, screen_width, red
 import time
 
 # global vars
@@ -11,9 +10,9 @@ frontier = None
 explored = set()
 problem = None
 grid = []
-total_nodes = 0
-algorithms = [uniform_cost_search, astar,
+algorithms = [astar, uniform_cost_search,
               breadth_fs,  iterative_deeping_search]
+total_nodes = 0
 curr_alg = 0
 start_time = 0
 

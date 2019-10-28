@@ -1,5 +1,4 @@
 from .difinitions import Problem, Node
-from utils import PriorityQueue
 
 
 def graph_search(problem, frontier, explored, fn):
@@ -12,7 +11,7 @@ def graph_search(problem, frontier, explored, fn):
         if fn == 'popleft':
             node = frontier.pop(0)
         elif fn == 'pop':
-            node = frontier.pop()
+            node = frontier.pop(-1)
 
         explored.add(node.state)
         # expand
@@ -36,6 +35,7 @@ def best_fs(problem, frontier, explored, fn):
         # goal check
         if problem.goal_test(node.state):
             return node, "done"
+
         explored.add(node.state)
         # expand
         for action in problem.actions(node.state):
@@ -85,13 +85,12 @@ def depth_fs(problem, frontier, explored):
 
 
 def astar(problem, frontier, explored):
-    node, result = best_fs(problem, frontier, explored,
-                           lambda n: n.path_cost+problem.h(n))
+    node, result = best_fs(problem, frontier, explored, frontier.f)
     return node, result
 
 
 def uniform_cost_search(problem, frontier, explored):
-    node, result = best_fs(problem, frontier, explored, lambda n: n.path_cost)
+    node, result = best_fs(problem, frontier, explored, frontier.f)
     return node, result
 
 
