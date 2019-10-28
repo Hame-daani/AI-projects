@@ -181,22 +181,18 @@ class AllDotsProblem(OneDotProblem):
         returns the 'best path cost' between point 'a' and 'b' on the grid.
         using a-star search.
         """
-        if (a, b) in self.dotsDict or (b, a) in self.dotsDict:
+        if (a, b) in self.dotsDict:
             return self.dotsDict[a, b]
         prob = OneDotProblem(initial=State(a, [b]), grid=self.grid)
-        frontier = PriorityQueue('min', prob.h)
-        explored = set()
-        frontier.append(Node(state=prob.initial_state))
         from core.algorithms import astar
-        while frontier:
-            node, result = astar(prob, frontier, explored)
-            if result == "done":
-                self.dotsDict[a, b] = node.path_cost
-                self.dotsDict[b, a] = node.path_cost
-                return node.path_cost
-            elif result == "failure":
-                print("Error dist 2: ", a, b)
-                return 0
+        answer, steps = astar(prob)
+        if answer:
+            self.dotsDict[a, b] = answer.path_cost
+            self.dotsDict[b, a] = answer.path_cost
+            return answer.path_cost
+        else:
+            print("Error dist 2: ", a, b)
+            return 0
 
     def h(self, node):
         """

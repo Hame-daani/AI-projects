@@ -1,6 +1,7 @@
 from config import *
 import heapq
 
+
 def draw_path(node):
     """
     draw a green path as our solution.
@@ -131,6 +132,9 @@ class PriorityQueue:
             return heapq.heappop(self.heap)[1]
         else:
             raise Exception('Trying to pop from empty PriorityQueue.')
+
+    def copy(self):
+        return self.heap[:]
 
     def __iter__(self):
         return self

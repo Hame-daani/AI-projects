@@ -1,4 +1,5 @@
 from .difinitions import Problem, Node
+from core.utils import PriorityQueue
 
 
 def graph_search(problem, fn):
@@ -12,6 +13,7 @@ def graph_search(problem, fn):
             node = frontier.pop(0)
         elif fn == 'pop':
             node = frontier.pop(-1)
+        # visualize purpose
         steps.append((node, frontier[:], explored.copy()))
         # explore
         explored.add(node.state)
@@ -27,17 +29,21 @@ def graph_search(problem, fn):
     return None, steps
 
 
-def best_fs(problem, frontier, explored, fn):
-    # failure check
-    if not frontier:
-        return None, "failure"
-    else:
+def best_fs(problem, fn):
+    frontier = PriorityQueue('min', fn)
+    frontier.append(Node(problem.initial_state))
+    explored = set()
+    # visualize purpose
+    steps = []
+    while frontier:
         # choosing
         node = frontier.pop()
         # goal check
         if problem.goal_test(node.state):
-            return node, "done"
-
+            return node, steps
+        # visualize purpose
+        steps.append((node, frontier.copy(), explored.copy()))
+        # explore
         explored.add(node.state)
         # expand
         for action in problem.actions(node.state):
@@ -48,7 +54,8 @@ def best_fs(problem, frontier, explored, fn):
                 if fn(child) < frontier[child]:
                     del frontier[child]
                     frontier.append(child)
-        return node, "pass"
+    # failure check
+    return None, steps
 
 
 def depth_limited_search(problem, frontier, explored, limit):
@@ -86,14 +93,14 @@ def depth_fs(problem):
     return node, steps
 
 
-def astar(problem, frontier, explored):
-    node, result = best_fs(problem, frontier, explored, frontier.f)
-    return node, result
+def astar(problem):
+    node, steps = best_fs(problem, lambda n: n.path_cost+problem.h(n))
+    return node, steps
 
 
-def uniform_cost_search(problem, frontier, explored):
-    node, result = best_fs(problem, frontier, explored, frontier.f)
-    return node, result
+def uniform_cost_search(problem):
+    node, steps = best_fs(problem, lambda n: n.path_cost)
+    return node, steps
 
 
 def iterative_deeping_search(problem, frontier, explored, depth=[0]):
