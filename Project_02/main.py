@@ -1,49 +1,49 @@
 from core.objects import Cell
-from core.difinitions import Node
 from core.algorithms import astar, breadth_fs, uniform_cost_search, iterative_deeping_search
 from core import utils
 from config import column_cells, row_cells, speed, screen_height, screen_width, red
-import time
+from time import time
 
 # global vars
-frontier = None
-explored = set()
+steps = None
+answer = None
+curr = 0
 problem = None
 grid = []
-algorithms = [astar, uniform_cost_search,
-              breadth_fs,  iterative_deeping_search]
-total_nodes = 0
+algorithms = [breadth_fs, uniform_cost_search, astar, iterative_deeping_search]
 curr_alg = 0
-start_time = 0
 
 
-def initial_state():
+def run():
     """
     initialize the state of program.
     """
-    global frontier, explored, problem, algorithms, curr_alg, total_nodes, start_time
-    total_nodes = 0
-    start_time = time.time()
-    # clear our frontier and explored
-    if algorithms[curr_alg] == astar:
-        frontier = utils.PriorityQueue(
-            'min', lambda n: n.path_cost+problem.h(n))
-    elif algorithms[curr_alg] == uniform_cost_search:
-        frontier = utils.PriorityQueue('min', lambda n: n.path_cost)
+    global answer, steps
+
+    print("<<"+algorithms[curr_alg].__name__+">>")
+
+    start_time = time()
+    answer, steps = algorithms[curr_alg](problem)
+    print("Total Time: ")+str(time()-start_time)
+
+    if answer:
+        print("done.")
     else:
-        frontier = []
-    explored.clear()
-    # add start node to frontier
-    frontier.append(Node(state=problem.initial_state))
+        print("failure")
+
+    print("Total Nodes: " + str(len(steps)))
 
 
 def setup():
     """
     used in processing. run once at start.
     """
-    global grid, problem, algorithms, curr_alg
+    global grid, problem
+
     w = width / column_cells
     h = height / row_cells
+    size(screen_width, screen_height)
+    frameRate(speed)
 
     # build the grid
     grid = [
@@ -58,43 +58,40 @@ def setup():
 
     # create our problem to be solved
     problem = utils.create_allDotsProblem(start, grid)
-    initial_state()
-    size(screen_width, screen_height)
-    frameRate(speed)
-    print("<<"+algorithms[curr_alg].__name__+">>")
+
+    run()
 
 
 def draw():
     """
     used in processing. run based on our frameRate in second.
     """
-    global grid, frontier, problem, explored, total_nodes, algorithms, curr_alg, start_time
+    global grid, curr, answer, steps
+
+    # calculation
+    node, frontier, explored = steps[curr]
+    curr += 1
+    if curr == len(steps)-1:
+        noLoop()
+
     # draw
     utils.draw_grid(grid)
-    # calculation
-    node, result = algorithms[curr_alg](problem, frontier, explored)
-    total_nodes += 1
-    # result check
-    if result == 'done' or result == 'failure':
-        print(result)
-        noLoop()
-    # draw
     utils.draw_explored(explored)
     utils.draw_frontier(frontier)
+
     # draw current node
-    if result != "failure":
+    if node:
         node.state.cell.show(red)
-    if result == "done":
-        print("Total Nodes: " + str(total_nodes))
-        print("Total Cost: "+str(node.path_cost))
-        print("Total time: ")+str(time.time()-start_time)
-        utils.draw_path(node)
+
+    # draw answer
+    if answer and curr == len(steps)-1:
+        print("Total Cost: "+str(answer.path_cost))
+        utils.draw_path(answer)
 
 
 def mouseClicked():
-    global algorithms, curr_alg
+    global algorithms, curr_alg, curr
     curr_alg = (curr_alg+1) % len(algorithms)
-    initial_state()
-    print("")
-    print("<<"+algorithms[curr_alg].__name__+">>")
+    curr = 0
+    run()
     loop()
