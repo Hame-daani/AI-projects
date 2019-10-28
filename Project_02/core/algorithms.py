@@ -1,18 +1,19 @@
 from .difinitions import Problem, Node
 
 
-def graph_search(problem, frontier, explored, fn):
-    # failure check
-    if not frontier:
-        return None, "failure"
-
-    else:
+def graph_search(problem, fn):
+    frontier = [Node(problem.initial_state)]
+    explored = set()
+    # visualize purpose
+    steps = []
+    while frontier:
         # choosing
         if fn == 'popleft':
             node = frontier.pop(0)
         elif fn == 'pop':
             node = frontier.pop(-1)
-
+        steps.append((node, frontier[:], explored.copy()))
+        # explore
         explored.add(node.state)
         # expand
         for action in problem.actions(node.state):
@@ -20,9 +21,10 @@ def graph_search(problem, frontier, explored, fn):
             if child.state not in explored and child not in frontier:
                 # goal check
                 if problem.goal_test(child.state):
-                    return child, "done"
+                    return child, steps
                 frontier.append(child)
-        return node, "pass"
+    # failure
+    return None, steps
 
 
 def best_fs(problem, frontier, explored, fn):
@@ -74,14 +76,14 @@ def depth_limited_search(problem, frontier, explored, limit):
     return recursive_dls(Node(problem.initial_state), problem, limit)
 
 
-def breadth_fs(problem, frontier, explored):
-    node, result = graph_search(problem, frontier, explored, fn="popleft")
-    return node, result
+def breadth_fs(problem):
+    node, steps = graph_search(problem, fn="popleft")
+    return node, steps
 
 
-def depth_fs(problem, frontier, explored):
-    node, result = graph_search(problem, frontier, explored, fn="pop")
-    return node, result
+def depth_fs(problem):
+    node, steps = graph_search(problem, fn="pop")
+    return node, steps
 
 
 def astar(problem, frontier, explored):
