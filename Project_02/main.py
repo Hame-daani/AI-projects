@@ -1,5 +1,5 @@
 from core.objects import Cell
-from core.algorithms import astar, breadth_fs, uniform_cost_search, iterative_deeping_search
+from core.algorithms import astar, breadth_fs, uniform_cost_search
 from core import utils
 from config import column_cells, row_cells, speed, screen_height, screen_width, red
 from time import time
@@ -10,8 +10,26 @@ answer = None
 curr = 0
 problem = None
 grid = []
-algorithms = [breadth_fs, uniform_cost_search, astar, iterative_deeping_search]
+algorithms = [breadth_fs, uniform_cost_search, astar]
 curr_alg = 0
+
+ResetAll = "\033[0m"
+Black = "\033[30m"
+Red = "\033[31m"
+Green = "\033[32m"
+Yellow = "\033[33m"
+Blue = "\033[34m"
+Magenta = "\033[35m"
+Cyan = "\033[36m"
+LightGray = "\033[37m"
+DarkGray = "\033[90m"
+LightRed = "\033[91m"
+LightGreen = "\033[92m"
+LightYellow = "\033[93m"
+LightBlue = "\033[94m"
+LightMagenta = "\033[95m"
+LightCyan = "\033[96m"
+White = "\033[97m"
 
 
 def run():
@@ -20,18 +38,19 @@ def run():
     """
     global answer, steps
 
-    print("<<"+algorithms[curr_alg].__name__+">>")
+    print(Yellow+"<<"+algorithms[curr_alg].__name__+">>"+ResetAll)
 
     start_time = time()
     answer, steps = algorithms[curr_alg](problem)
-    print("Total Time: ")+str("{:2.2}".format(time()-start_time))
+    print("Total Time: ")+str(LightBlue +
+                              "{:2.2}".format(time()-start_time)+ResetAll)
 
     if answer:
-        print("done.")
+        print(Green+"Success"+ResetAll)
     else:
-        print("failure")
+        print(Red+"Failure"+ResetAll)
 
-    print("Total Nodes: " + str(len(steps)))
+    print("Total Nodes: " + LightBlue+str(len(steps))+ResetAll)
 
 
 def setup():
@@ -85,7 +104,7 @@ def draw():
 
     # draw answer
     if answer and curr == len(steps)-1:
-        print("Total Cost: "+str(answer.path_cost))
+        print("Total Cost: "+LightRed+str(answer.path_cost)+ResetAll)
         utils.draw_path(answer)
 
 
