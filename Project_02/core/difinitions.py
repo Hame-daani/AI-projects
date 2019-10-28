@@ -174,7 +174,11 @@ class AllDotsProblem(OneDotProblem):
 
     def __init__(self, initial, goal=[], grid=[]):
         OneDotProblem.__init__(self, initial, goal=goal, grid=grid)
-        self.dotsDict = dict()  # dict contains best path cost between each two point
+        # dict contains best path cost between each two point
+        self.dotsDict = dict()
+        for food in initial.targets:
+            for tofood in initial.targets:
+                self.calcDist2(food, tofood)
 
     def calcDist2(self, a, b):
         """
@@ -191,7 +195,8 @@ class AllDotsProblem(OneDotProblem):
             self.dotsDict[b, a] = answer.path_cost
             return answer.path_cost
         else:
-            print("Error dist 2: ", a, b)
+            self.dotsDict[a, b] = 0
+            self.dotsDict[b, a] = 0
             return 0
 
     def h(self, node):
@@ -199,9 +204,21 @@ class AllDotsProblem(OneDotProblem):
         heuristic to be used in a-star search
         """
         distances = []
-        distances_food = [0]
+        distances_food = []
         for food in node.state.targets:
-            distances.append(self.calcDist2(node.state.cell, food))
             for tofood in node.state.targets:
-                distances_food.append(self.calcDist2(food, tofood))
-        return min(distances)+max(distances_food) if len(distances) else max(distances_food)
+                distances_food.append(
+                    (food, tofood, self.calcDist2(food, tofood)))
+        if len(distances_food):
+            c = max(distances_food, key=lambda a: a[2])
+            a, b, x = c
+            distances.append(self.calcDist2(node.state.cell, a))
+            distances.append(self.calcDist2(node.state.cell, b))
+            if len(distances):
+                y = min(distances)
+            else:
+                y = 0
+        else:
+            x = 0
+            y = 0
+        return x + y
