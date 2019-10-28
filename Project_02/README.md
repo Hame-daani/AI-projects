@@ -21,7 +21,7 @@ Try to find **optimal** path for pacman to eat **all the dots**. every cell has 
 - 
 ['LEFT', 'LEFT', 'LEFT', 'DOWN', 'DOWN', 'DOWN', 'DOWN', 'RIGHT', 'UP', 'RIGHT']
 
-![bfs-example](/example/breadth_fs.gif)
+![bfs-example](example/breadth_fs.gif)
 
 ### Uniform Cost Search
 
@@ -31,7 +31,7 @@ Try to find **optimal** path for pacman to eat **all the dots**. every cell has 
 - 
 ['LEFT', 'LEFT', 'LEFT', 'RIGHT', 'DOWN', 'RIGHT', 'DOWN', 'DOWN', 'DOWN', 'LEFT']
 
-![ucs-example](/example/ucs.gif)
+![ucs-example](example/ucs.gif)
 
 ### A*
 
@@ -41,4 +41,4 @@ Try to find **optimal** path for pacman to eat **all the dots**. every cell has 
   
 ['LEFT', 'LEFT', 'LEFT', 'RIGHT', 'DOWN', 'RIGHT', 'DOWN', 'DOWN', 'DOWN', 'LEFT']
 
-![astar-example](/example/a-star.gif)
+![astar-example](example/a-star.gif)
