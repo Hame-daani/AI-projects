@@ -1,4 +1,5 @@
-from .difinitions import Problem, PriorityQueue, Node
+from .difinitions import Problem, Node
+from utils import PriorityQueue
 
 
 def graph_search(problem, frontier, explored, fn):

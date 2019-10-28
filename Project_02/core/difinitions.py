@@ -1,5 +1,4 @@
-import heapq
-from core.utils import row_cells, column_cells
+from core.utils import row_cells, column_cells, PriorityQueue
 
 
 class Problem(object):
@@ -175,14 +174,15 @@ class AllDotsProblem(OneDotProblem):
 
     def __init__(self, initial, goal=[], grid=[]):
         OneDotProblem.__init__(self, initial, goal=goal, grid=grid)
-        self.dotsDict = dict()  # dict contains best path cost between each two target
-        self.calcDotsDistDict()
+        self.dotsDict = dict()  # dict contains best path cost between each two point
 
     def calcDist2(self, a, b):
         """
         returns the 'best path cost' between point 'a' and 'b' on the grid.
         using a-star search.
         """
+        if (a, b) in self.dotsDict or (b, a) in self.dotsDict:
+            return self.dotsDict[a, b]
         prob = OneDotProblem(initial=State(a, [b]), grid=self.grid)
         frontier = PriorityQueue('min', prob.h)
         explored = set()
@@ -191,138 +191,21 @@ class AllDotsProblem(OneDotProblem):
         while frontier:
             node, result = astar(prob, frontier, explored)
             if result == "done":
+                self.dotsDict[a, b] = node.path_cost
+                self.dotsDict[b, a] = node.path_cost
                 return node.path_cost
             elif result == "failure":
                 print("Error dist 2: ", a, b)
                 return 0
 
-    def calcDotsDistDict(self):
-        """
-        Fill our dotsDict to be used in heuristic.
-        """
-        for a in self.initial_state.targets:
-            for b in self.initial_state.targets:
-                if not a == b:
-                    if (b, a) in self.dotsDict:
-                        self.dotsDict[a, b] = self.dotsDict[b, a]
-                    else:
-                        self.dotsDict[a, b] = self.calcDist2(a, b)
-
     def h(self, node):
         """
         heuristic to be used in a-star search
         """
-        # https://stackoverflow.com/questions/9994913/pacman-what-kinds-of-heuristics-are-mainly-used
-        def dist_two_furthest_dots():
-            """
-            return the distance between two furthest dots
-            """
-            keys = self.dotsDict.keys()
-            valids = list(
-                set([i for k in keys for i in k])
-                &
-                set(node.state.targets)
-            )
-            l = []
-            for key in self.dotsDict.keys():
-                a, b = key
-                if a in valids and b in valids:
-                    l.append(self.dotsDict.get(key))
-            if len(l) == 0:
-                print("Error two furtehst: ", keys, valids)
-            m = max(l)
-            return m
-
-        # second function
-        def curr_pos_to_close_two(x):
-            """
-            returns distance from pacman to closest of two dot
-            """
-            for k, v in self.dotsDict.items():
-                if v == x:
-                    a, b = k
-                    dist_to1 = self.calcDist2(a, node.state.cell)
-                    dist_to2 = self.calcDist2(b, node.state.cell)
-                    m = min([dist_to1, dist_to2])
-                    if m == 0 or not m:
-                        return float('inf')
-                    return m
-        # h function
-        if len(node.state.targets) == 1:
-            return super(AllDotsProblem, self).h(node)
-        elif len(node.state.targets) != 0:
-            x = dist_two_furthest_dots()
-            y = curr_pos_to_close_two(x)
-            return x + y
-        else:
-            return 0
-
-
-class PriorityQueue:
-    """A Queue in which the minimum (or maximum) element (as determined by f and
-    order) is returned first.
-    If order is 'min', the item with minimum f(x) is
-    returned first; if order is 'max', then it is the item with maximum f(x).
-    Also supports dict-like lookup."""
-
-    def __init__(self, order='min', f=lambda x: x):
-        self.heap = []
-        self.current = -1
-
-        if order == 'min':
-            self.f = f
-        elif order == 'max':  # now item with max f(x)
-            self.f = lambda x: -f(x)  # will be popped first
-        else:
-            raise ValueError("order must be either 'min' or 'max'.")
-
-    def append(self, item):
-        """Insert item at its correct position."""
-        heapq.heappush(self.heap, (self.f(item), item))
-
-    def extend(self, items):
-        """Insert each item in items at its correct position."""
-        for item in items:
-            self.append(item)
-
-    def pop(self):
-        """Pop and return the item (with min or max f(x) value)
-        depending on the order."""
-        if self.heap:
-            return heapq.heappop(self.heap)[1]
-        else:
-            raise Exception('Trying to pop from empty PriorityQueue.')
-
-    def __iter__(self):
-        return self
-
-    def next(self):
-        self.current += 1
-        if self.current < len(self.heap):
-            return self.heap[self.current]
-        self.current = -1
-        raise StopIteration
-
-    def __len__(self):
-        """Return current capacity of PriorityQueue."""
-        return len(self.heap)
-
-    def __contains__(self, key):
-        """Return True if the key is in PriorityQueue."""
-        return any([item == key for _, item in self.heap])
-
-    def __getitem__(self, key):
-        """Returns the first value associated with key in PriorityQueue.
-        Raises KeyError if key is not present."""
-        for value, item in self.heap:
-            if item == key:
-                return value
-        raise KeyError(str(key) + " is not in the priority queue")
-
-    def __delitem__(self, key):
-        """Delete the first occurrence of key."""
-        try:
-            del self.heap[[item == key for _, item in self.heap].index(True)]
-        except ValueError:
-            raise KeyError(str(key) + " is not in the priority queue")
-        heapq.heapify(self.heap)
+        distances = []
+        distances_food = [0]
+        for food in node.state.targets:
+            distances.append(self.calcDist2(node.state.cell, food))
+            for tofood in node.state.targets:
+                distances_food.append(self.calcDist2(food, tofood))
+        return min(distances)+max(distances_food) if len(distances) else max(distances_food)

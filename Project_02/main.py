@@ -1,5 +1,5 @@
 from core.objects import Cell
-from core.difinitions import Node, PriorityQueue
+from core.difinitions import Node
 from core.algorithms import astar, breadth_fs, uniform_cost_search, iterative_deeping_search
 from random import randint, uniform
 from core import utils
@@ -12,7 +12,8 @@ explored = set()
 problem = None
 grid = []
 total_nodes = 0
-algorithms = [breadth_fs, uniform_cost_search, astar, iterative_deeping_search]
+algorithms = [uniform_cost_search, astar,
+              breadth_fs,  iterative_deeping_search]
 curr_alg = 0
 start_time = 0
 
@@ -26,9 +27,10 @@ def initial_state():
     start_time = time.time()
     # clear our frontier and explored
     if algorithms[curr_alg] == astar:
-        frontier = PriorityQueue('min', lambda n: n.path_cost+problem.h(n))
+        frontier = utils.PriorityQueue(
+            'min', lambda n: n.path_cost+problem.h(n))
     elif algorithms[curr_alg] == uniform_cost_search:
-        frontier = PriorityQueue('min', lambda n: n.path_cost)
+        frontier = utils.PriorityQueue('min', lambda n: n.path_cost)
     else:
         frontier = []
     explored.clear()
@@ -40,7 +42,7 @@ def setup():
     """
     used in processing. run once at start.
     """
-    global screen_size, grid, problem, algorithms, curr_alg
+    global grid, problem, algorithms, curr_alg
     w = width / column_cells
     h = height / row_cells
 
@@ -58,9 +60,9 @@ def setup():
     # create our problem to be solved
     problem = utils.create_allDotsProblem(start, grid)
     initial_state()
-    size(screen_size, screen_size)
+    size(screen_width, screen_height)
     frameRate(speed)
-    print(algorithms[curr_alg].__name__)
+    print("<<"+algorithms[curr_alg].__name__+">>")
 
 
 def draw():
@@ -95,5 +97,5 @@ def mouseClicked():
     curr_alg = (curr_alg+1) % len(algorithms)
     initial_state()
     print("")
-    print(algorithms[curr_alg].__name__)
+    print("<<"+algorithms[curr_alg].__name__+">>")
     loop()

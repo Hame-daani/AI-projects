@@ -1,7 +1,8 @@
 row_cells = 10
-column_cells = 10
-num_dots = 3
-screen_size = 500
+column_cells = 20
+num_dots = 5
+screen_width = 800
+screen_height = 500
 speed = 100
 
 # colors
