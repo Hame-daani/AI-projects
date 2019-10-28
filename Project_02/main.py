@@ -24,7 +24,7 @@ def run():
 
     start_time = time()
     answer, steps = algorithms[curr_alg](problem)
-    print("Total Time: ")+str(time()-start_time)
+    print("Total Time: ")+str("{:2.2}".format(time()-start_time))
 
     if answer:
         print("done.")
@@ -71,7 +71,7 @@ def draw():
     # calculation
     node, frontier, explored = steps[curr]
     curr += 1
-    if curr == len(steps)-1:
+    if curr >= len(steps)-1:
         noLoop()
 
     # draw
@@ -93,5 +93,6 @@ def mouseClicked():
     global algorithms, curr_alg, curr
     curr_alg = (curr_alg+1) % len(algorithms)
     curr = 0
+    print("")
     run()
     loop()
