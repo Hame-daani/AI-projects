@@ -12,6 +12,7 @@ problem = None
 grid = []
 algorithms = [breadth_fs, uniform_cost_search, astar]
 curr_alg = 0
+start_time = 0
 
 ResetAll = "\033[0m"
 Black = "\033[30m"
@@ -36,21 +37,12 @@ def run():
     """
     initialize the state of program.
     """
-    global answer, steps
+    global answer, steps, start_time
 
     print(Yellow+"<<"+algorithms[curr_alg].__name__+">>"+ResetAll)
 
     start_time = time()
     answer, steps = algorithms[curr_alg](problem)
-    print("Total Time: ")+str(LightBlue +
-                              "{:2.2}".format(time()-start_time)+ResetAll)
-
-    if answer:
-        print(Green+"Success"+ResetAll)
-    else:
-        print(Red+"Failure"+ResetAll)
-
-    print("Total Nodes: " + LightBlue+str(len(steps))+ResetAll)
 
 
 def setup():
@@ -90,7 +82,14 @@ def draw():
     # calculation
     node, frontier, explored = steps[curr]
     curr += 1
-    if curr >= len(steps)-1:
+    if curr == len(steps)-1:
+        if answer:
+            print(Green+"Success"+ResetAll)
+        else:
+            print(Red+"Failure"+ResetAll)
+        print("Total Time: "+str(LightBlue +
+                                 "{:.2f}".format(time()-start_time)+ResetAll))
+        print("Total Nodes: " + LightBlue+str(len(steps))+ResetAll)
         noLoop()
 
     # draw
