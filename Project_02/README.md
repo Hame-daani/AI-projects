@@ -13,40 +13,32 @@ Try to find **optimal** path for pacman to eat **all the dots**. every cell has 
 **Dark Blue** cells => **explored** cells  
 **Light Blue** cells => **frontier** cells
 
-`Note: FrameRate are increasingly change due to boring process! `
+### Breadth First Search
 
-### One Dot
+- Total Time: **2.06**  
+- Total Nodes: **175**  
+- Total Cost: **47**  
+- 
+['LEFT', 'LEFT', 'LEFT', 'DOWN', 'DOWN', 'DOWN', 'DOWN', 'RIGHT', 'UP', 'RIGHT']
 
-- **Moves**: ['UP', 'UP', 'LEFT', 'UP', 'UP', 'LEFT', 'LEFT', 'LEFT', 'LEFT', 'DOWN']
+![bfs-example](/example/breadth_fs.gif)
 
-- **Total Cost**: 40
+### Uniform Cost Search
 
-![oneDot-example](example/one.gif)
+- Total Time: **1.24**  
+- Total Nodes: **109**  
+- Total Cost: **36**  
+- 
+['LEFT', 'LEFT', 'LEFT', 'RIGHT', 'DOWN', 'RIGHT', 'DOWN', 'DOWN', 'DOWN', 'LEFT']
 
-### Two Dot
+![ucs-example](/example/ucs.gif)
 
-- **Moves**: ['DOWN', 'LEFT', 'LEFT', 'DOWN', 'DOWN', 'UP', 'UP', 'RIGHT', 'RIGHT', 'UP', 'UP', 'UP', 'UP', 'RIGHT', 'UP', 'RIGHT', 'UP', 'RIGHT']
-- **Total Cost**: 85
+### A*
 
-![twoDot-example](example/two.gif)
+- Total Time: **0.18**  
+- Total Nodes: **14**  
+- Total Cost: **36**  
+  
+['LEFT', 'LEFT', 'LEFT', 'RIGHT', 'DOWN', 'RIGHT', 'DOWN', 'DOWN', 'DOWN', 'LEFT']
 
-### Three Dot
-
-- **Moves**: ['UP', 'RIGHT', 'RIGHT', 'RIGHT', 'RIGHT', 'LEFT', 'LEFT', 'LEFT', 'LEFT', 'UP', 'UP', 'UP', 'DOWN', 'DOWN', 'DOWN', 'LEFT', 'LEFT', 'DOWN', 'DOWN', 'LEFT', 'DOWN', 'DOWN', 'DOWN', 'LEFT']
-- **Total Cost**: 103
-
-![threeDot-example](example/three.gif)
-
-### Four Dot
-
-- **Moves**: ['LEFT', 'DOWN', 'UP', 'RIGHT', 'UP', 'RIGHT', 'UP', 'UP', 'LEFT', 'LEFT', 'UP', 'UP', 'RIGHT', 'RIGHT', 'RIGHT', 'RIGHT']
-- **Total Cost**: 48
-
-![fourDot-example](example/four.gif)
-
-### Five Dot
-
-- **Moves**: ['DOWN', 'RIGHT', 'DOWN', 'DOWN', 'RIGHT', 'RIGHT', 'LEFT', 'LEFT', 'UP', 'UP', 'LEFT', 'LEFT', 'LEFT', 'DOWN', 'DOWN', 'UP', 'LEFT', 'LEFT', 'RIGHT', 'RIGHT', 'UP', 'UP', 'UP', 'LEFT', 'UP', 'UP', 'UP']
-- **Total Cost**: 125
-
-![fiveDot-example](example/five.gif)
+![astar-example](/example/a-star.gif)
