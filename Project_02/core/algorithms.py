@@ -3,6 +3,10 @@ from core.utils import PriorityQueue
 
 
 def graph_search(problem, fn):
+    """
+    base function to be used in breadth first
+    and depth first search.
+    """
     frontier = [Node(problem.initial_state)]
     explored = set()
     # visualize purpose
@@ -30,6 +34,10 @@ def graph_search(problem, fn):
 
 
 def best_fs(problem, fn):
+    """
+    base function to be used in a-satr and
+    unifrom cost search.
+    """
     frontier = PriorityQueue('min', fn)
     frontier.append(Node(problem.initial_state))
     explored = set()

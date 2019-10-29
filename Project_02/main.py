@@ -35,7 +35,7 @@ White = "\033[97m"
 
 def run():
     """
-    initialize the state of program.
+    run algorithm on our problem and saved the result and steps.
     """
     global answer, steps, start_time
 
@@ -108,6 +108,9 @@ def draw():
 
 
 def mouseClicked():
+    """
+    change algorithm everythme we clicked the frame.
+    """
     global algorithms, curr_alg, curr
     curr_alg = (curr_alg+1) % len(algorithms)
     curr = 0
