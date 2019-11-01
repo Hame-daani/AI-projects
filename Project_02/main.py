@@ -82,11 +82,14 @@ def draw():
     # calculation
     node, frontier, explored = steps[curr]
     curr += 1
+    if not answer:
+        print(Red+"Failure"+ResetAll)
+        print("Total Time: "+str(LightBlue +
+                                 "{:.2f}".format(time()-start_time)+ResetAll))
+        print("Total Nodes: " + LightBlue+str(len(steps))+ResetAll)
+        noLoop()
     if curr == len(steps)-1:
-        if answer:
-            print(Green+"Success"+ResetAll)
-        else:
-            print(Red+"Failure"+ResetAll)
+        print(Green+"Success"+ResetAll)
         print("Total Time: "+str(LightBlue +
                                  "{:.2f}".format(time()-start_time)+ResetAll))
         print("Total Nodes: " + LightBlue+str(len(steps))+ResetAll)
