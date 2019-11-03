@@ -1,47 +1,31 @@
 from core.objects import Cell
 from core.algorithms import astar, breadth_fs, uniform_cost_search
 from core import utils
-from config import column_cells, row_cells, speed, screen_height, screen_width, red
+import config
 from time import time
 
 # global vars
 steps = None
 answer = None
-curr = 0
+step = 0
 problem = None
 grid = []
 algorithms = [breadth_fs, uniform_cost_search, astar]
 curr_alg = 0
 start_time = 0
 
-ResetAll = "\033[0m"
-Black = "\033[30m"
-Red = "\033[31m"
-Green = "\033[32m"
-Yellow = "\033[33m"
-Blue = "\033[34m"
-Magenta = "\033[35m"
-Cyan = "\033[36m"
-LightGray = "\033[37m"
-DarkGray = "\033[90m"
-LightRed = "\033[91m"
-LightGreen = "\033[92m"
-LightYellow = "\033[93m"
-LightBlue = "\033[94m"
-LightMagenta = "\033[95m"
-LightCyan = "\033[96m"
-White = "\033[97m"
-
 
 def run():
     """
     run algorithm on our problem and saved the result and steps.
     """
-    global answer, steps, start_time
-
-    print(Yellow+"<<"+algorithms[curr_alg].__name__+">>"+ResetAll)
-
+    global answer, steps, start_time, algorithms, curr_alg, problem, grid
+    # print algorithm name
+    print(config.Yellow+"<<" +
+          algorithms[curr_alg].__name__+">>"+config.ResetAll)
+    # save starting time
     start_time = time()
+    # run
     answer, steps = algorithms[curr_alg](problem)
 
 
@@ -50,26 +34,25 @@ def setup():
     used in processing. run once at start.
     """
     global grid, problem
-
-    w = width / column_cells
-    h = height / row_cells
-    size(screen_width, screen_height)
-    frameRate(speed)
-
+    # calculate the size of each cell
+    w = width / config.column_cells
+    h = height / config.row_cells
+    # setup display
+    size(config.screen_width, config.screen_height)
+    frameRate(config.speed)
     # build the grid
     grid = [
         [
-            Cell(i, j, w, h) for i in range(column_cells)
+            Cell(i, j, w, h) for i in range(config.column_cells)
         ]
-        for j in range(row_cells)
+        for j in range(config.row_cells)
     ]
-
     start = utils.build_grid_random(grid)
     # start = utils.biuld_grid_from_file(grid)
 
     # create our problem to be solved
     problem = utils.create_allDotsProblem(start, grid)
-
+    # run algorithm on our problem
     run()
 
 
@@ -77,36 +60,37 @@ def draw():
     """
     used in processing. run based on our frameRate in second.
     """
-    global grid, curr, answer, steps
-
-    # calculation
-    node, frontier, explored = steps[curr]
-    curr += 1
+    global grid, step, answer, steps
+    # get each step to draw
+    node, frontier, explored = steps[step]
+    step += 1
+    # failure check
     if not answer:
-        print(Red+"Failure"+ResetAll)
-        print("Total Time: "+str(LightBlue +
-                                 "{:.2f}".format(time()-start_time)+ResetAll))
-        print("Total Nodes: " + LightBlue+str(len(steps))+ResetAll)
+        print(config.Red+"Failure"+config.ResetAll)
+        print("Total Time: "+str(config.LightBlue +
+                                 "{:.2f}".format(time()-start_time)+config.ResetAll))
+        print("Total Nodes: " + config.LightBlue +
+              str(len(steps))+config.ResetAll)
         noLoop()
-    if curr == len(steps)-1:
-        print(Green+"Success"+ResetAll)
-        print("Total Time: "+str(LightBlue +
-                                 "{:.2f}".format(time()-start_time)+ResetAll))
-        print("Total Nodes: " + LightBlue+str(len(steps))+ResetAll)
+    # success check
+    if step == len(steps)-1:
+        print(config.Green+"Success"+config.ResetAll)
+        print("Total Time: "+str(config.LightBlue +
+                                 "{:.2f}".format(time()-start_time)+config.ResetAll))
+        print("Total Nodes: " + config.LightBlue +
+              str(len(steps))+config.ResetAll)
+        print("Total Cost: "+config.LightRed +
+              str(answer.path_cost)+config.ResetAll)
         noLoop()
-
     # draw
     utils.draw_grid(grid)
     utils.draw_explored(explored)
     utils.draw_frontier(frontier)
-
     # draw current node
     if node:
-        node.state.cell.show(red)
-
+        node.state.cell.show(config.red)
     # draw answer
-    if answer and curr == len(steps)-1:
-        print("Total Cost: "+LightRed+str(answer.path_cost)+ResetAll)
+    if step == len(steps)-1:
         utils.draw_path(answer)
 
 
@@ -114,9 +98,9 @@ def mouseClicked():
     """
     change algorithm everythme we clicked the frame.
     """
-    global algorithms, curr_alg, curr
+    global algorithms, curr_alg, step
     curr_alg = (curr_alg+1) % len(algorithms)
-    curr = 0
+    step = 0
     print("")
     run()
     loop()

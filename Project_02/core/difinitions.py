@@ -70,8 +70,8 @@ class Node:
             path.append(node)
             node = node.parent
         return list(reversed(path))
-    # buit_in functions
 
+    # buit_in functions
     def __eq__(self, value):
         return isinstance(value, Node) and self.state == value.state
 
