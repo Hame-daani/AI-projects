@@ -15,30 +15,32 @@ Try to find **optimal** path for pacman to eat **all the dots**. every cell has 
 
 ### Breadth First Search
 
-- Total Time: **2.06**  
-- Total Nodes: **175**  
-- Total Cost: **47**  
-- 
-['LEFT', 'LEFT', 'LEFT', 'DOWN', 'DOWN', 'DOWN', 'DOWN', 'RIGHT', 'UP', 'RIGHT']
+- Total Time: **21.88**  
+- Total Nodes: **1551**  
+- Total Cost: **140**  
+
+['DOWN', 'DOWN', 'RIGHT', 'DOWN', 'UP', 'UP', 'LEFT', 'LEFT', 'LEFT', 'DOWN', 'DOWN', 'LEFT', 'LEFT', 'LEFT', 'RIGHT', 'UP', 'UP', 'UP', 'UP', 'LEFT', 'UP', 'DOWN', 'RIGHT', 'RIGHT', 'UP', 'RIGHT', 'RIGHT', 'RIGHT', 'UP', 'RIGHT', 'UP', 'UP']
+
 
 ![bfs-example](example/breadth_fs.gif)
 
 ### Uniform Cost Search
 
-- Total Time: **1.24**  
-- Total Nodes: **109**  
-- Total Cost: **36**  
-- 
-['LEFT', 'LEFT', 'LEFT', 'RIGHT', 'DOWN', 'RIGHT', 'DOWN', 'DOWN', 'DOWN', 'LEFT']
+- Total Time: **17.94**  
+- Total Nodes: **1355**  
+- Total Cost: **132**
+
+['DOWN', 'RIGHT', 'DOWN', 'DOWN', 'UP', 'UP', 'LEFT', 'LEFT', 'LEFT', 'DOWN', 'LEFT', 'LEFT', 'DOWN', 'LEFT', 'RIGHT', 'UP', 'UP', 'UP', 'UP', 'LEFT', 'UP', 'DOWN', 'RIGHT', 'RIGHT', 'UP', 'RIGHT', 'RIGHT', 'RIGHT', 'RIGHT', 'UP', 'UP', 'UP']
 
 ![ucs-example](example/ucs.gif)
 
 ### A*
 
-- Total Time: **0.18**  
-- Total Nodes: **14**  
-- Total Cost: **36**  
-  
-['LEFT', 'LEFT', 'LEFT', 'RIGHT', 'DOWN', 'RIGHT', 'DOWN', 'DOWN', 'DOWN', 'LEFT']
+- Total Time: **1.01**  
+- Total Nodes: **202**  
+- Total Cost: **132**  
+
+['DOWN', 'RIGHT', 'DOWN', 'DOWN', 'UP', 'UP', 'LEFT', 'LEFT', 'LEFT', 'DOWN', 'LEFT', 'LEFT', 'DOWN', 'LEFT', 'RIGHT', 'UP', 'UP', 'UP', 'UP', 'LEFT', 'UP', 'DOWN', 'RIGHT', 'RIGHT', 'UP', 'RIGHT', 'RIGHT', 'RIGHT', 'RIGHT', 'UP', 'UP', 'UP']
+
 
 ![astar-example](example/a-star.gif)
