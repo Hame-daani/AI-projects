@@ -207,8 +207,11 @@ class AllDotsProblem(OneDotProblem):
         distances_food = []
         for food in node.state.targets:
             for tofood in node.state.targets:
-                distances_food.append(
-                    (food, tofood, self.calcDist2(food, tofood)))
+                if food == tofood:
+                    distances_food.append((food, tofood, 0))
+                else:
+                    distances_food.append(
+                        (food, tofood, self.calcDist2(food, tofood)))
         if len(distances_food):
             c = max(distances_food, key=lambda a: a[2])
             a, b, x = c
