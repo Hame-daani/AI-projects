@@ -31,7 +31,17 @@ def reproduce(x: list, y: list):
     return child
 
 
-def genetic_algorithm(population: list, fitness_fn, mutate_probability=0.1, fit_target=0, time_target=1):
+def mutate(child, gene_pool: list):
+    n = len(child)
+    g = len(gene_pool)
+    c = random.randrange(0, n)
+    r = random.randrange(0, g)
+
+    new_gene = gene_pool[r]
+    return child[:c] + [new_gene] + child[c + 1:]
+
+
+def genetic_algorithm(population: list, gene_pool: list, fitness_fn, mutate_probability=0.1, fit_target=0, time_target=1):
     """
     """
     start_time = time.time()
@@ -51,7 +61,7 @@ def genetic_algorithm(population: list, fitness_fn, mutate_probability=0.1, fit_
             child = reproduce(x, y)
             p = random.uniform(0, 1)
             if p < mutate_probability:
-                child = mutate(child)
+                child = mutate(child, gene_pool)
             new_population.append(child)
         population = new_population
     return (population, min(population, key=fitness_fn)
