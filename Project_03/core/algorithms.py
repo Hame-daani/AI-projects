@@ -22,6 +22,15 @@ def select(population: list, fitness_fn):
     return x, y
 
 
+def reproduce(x: list, y: list):
+    """
+    """
+    n = len(x)
+    c = random.randrange(0, n)
+    child = x[:c] + y[c:]
+    return child
+
+
 def genetic_algorithm(population: list, fitness_fn, mutate_probability=0.1, fit_target=0, time_target=1):
     """
     """
