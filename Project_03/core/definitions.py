@@ -5,10 +5,11 @@ class GeneticProblem(object):
     """
     """
 
-    def __init__(self, gene_pool: list, len: int):
-        self.gene_pool = gene_pool
-        self.len = len
+    def __init__(self, *args, **kwargs):
+        self.gene_pool = kwargs['gene_pool']
+        self.len = kwargs['len']
         self.population = self.build_population()
+        super().__init__()
 
     def build_population(self):
         """
@@ -26,10 +27,10 @@ class ShopsProblem(GeneticProblem):
     """
     """
 
-    def __init__(self, file: str, len: int):
-        self.weights = self.build_weights(file)
-        gene_pool = self.get_genes()
-        super().__init__(gene_pool, len)
+    def __init__(self, *args, **kwargs):
+        self.weights = self.build_weights(kwargs['file'])
+        kwargs['gene_pool'] = self.get_genes()
+        super().__init__(*args, **kwargs)
 
     def build_weights(self, file: str):
         """
