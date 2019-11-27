@@ -1,6 +1,13 @@
 import random
 
 
+class City(object):
+    def __init__(self, number: int, weights: list):
+        self.number = number
+        self.weights = weights
+        super().__init__()
+
+
 class GeneticProblem(object):
     """
     """
@@ -28,23 +35,24 @@ class ShopsProblem(GeneticProblem):
     """
 
     def __init__(self, *args, **kwargs):
-        self.weights = self.build_weights(kwargs['file'])
+        self.cities = self.get_cities(kwargs['file'])
         kwargs['gene_pool'] = self.get_genes()
         super().__init__(*args, **kwargs)
 
-    def build_weights(self, file: str):
+    def get_cities(self, file: str):
         """
         """
-        weights = []
+        cities = []
         with open(file) as f:
             lines = f.readlines()
         f.close()
-        for line in lines:
+        for i, line in enumerate(lines):
             row = line.strip('\n').split()
-            weights.append(row)
-        return weights
+            row = list(map(int, row))
+            cities.append(City(number=i, weights=row))
+        return cities
 
     def get_genes(self):
         """
         """
-        return [i for i in range(len(self.weights))]
+        return [i for i in range(len(self.cities))]
