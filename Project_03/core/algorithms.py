@@ -1,6 +1,7 @@
 import time
 import random
 from . import utils
+from .definitions import GeneticProblem
 
 
 def select(population: list, fitness_fn):
@@ -16,9 +17,9 @@ def select(population: list, fitness_fn):
         else:
             chances.append(chance)
     p = random.uniform(0, chances[-1])
-    x = population(utils.getIndex(population, p))
+    x = population[utils.getIndex(chances, p)]
     p = random.uniform(0, chances[-1])
-    y = population(utils.getIndex(population, p))
+    y = population[utils.getIndex(chances, p)]
     return x, y
 
 
@@ -36,12 +37,12 @@ def mutate(child, gene_pool: list):
     g = len(gene_pool)
     c = random.randrange(0, n)
     r = random.randrange(0, g)
-
+    # random.choice(gene_pool)
     new_gene = gene_pool[r]
     return child[:c] + [new_gene] + child[c + 1:]
 
 
-def genetic_algorithm(population: list, gene_pool: list, fitness_fn, mutate_probability=0.1, fit_target=0, time_target=1):
+def genetic_algorithm(population: list, gene_pool: list, fitness_fn, mutate_probability=0.1, fit_target=0, time_target=3):
     """
     """
     start_time = time.time()
@@ -64,4 +65,8 @@ def genetic_algorithm(population: list, gene_pool: list, fitness_fn, mutate_prob
                 child = mutate(child, gene_pool)
             new_population.append(child)
         population = new_population
-    return (population, min(population, key=fitness_fn)
+    return {'population': population, 'best': min(population, key=fitness_fn), 'weight': fitness_fn(min(population, key=fitness_fn))}
+
+
+def genetic_serach(problem: GeneticProblem):
+    return genetic_algorithm(population=problem.population, gene_pool=problem.gene_pool, fitness_fn=problem.fitness_fn)

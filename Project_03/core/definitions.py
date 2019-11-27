@@ -4,8 +4,22 @@ import random
 class City(object):
     def __init__(self, number: int, weights: list):
         self.number = number
-        self.weights = weights
+        self.neighbors = weights
         super().__init__()
+
+    def get_worst(self, budies):
+        """
+        """
+        worst = 0
+        for i, n in enumerate(self.neighbors):
+            if all(i != b.number for b in budies):
+                worst = n if n > worst else worst
+        return worst
+
+        return worst
+
+    def __repr__(self):
+        return f"c:{self.number}"
 
 
 class GeneticProblem(object):
@@ -18,16 +32,27 @@ class GeneticProblem(object):
         self.population = self.build_population()
         super().__init__()
 
-    def build_population(self):
+    def build_population(self, repeative=True):
         """
         """
         population = []
         for i in range(100):
             p = []
             for l in range(self.len):
-                p.append(random.choice(self.gene_pool))
+                if repeative:
+                    p.append(random.choice(self.gene_pool))
+                else:
+                    r = random.choice(self.gene_pool)
+                    while r in p:
+                        r = random.choice(self.gene_pool)
+                    p.append(r)
             population.append(p)
         return population
+
+    def fitness_fn(self, sample):
+        """
+        """
+        return 1
 
 
 class ShopsProblem(GeneticProblem):
@@ -55,4 +80,19 @@ class ShopsProblem(GeneticProblem):
     def get_genes(self):
         """
         """
-        return [i for i in range(len(self.cities))]
+        return [city for city in self.cities]
+
+    def fitness_fn(self, shops: list):
+        """
+        """
+        if len(shops) != len(set(shops)):
+            return float('inf')
+        worst = 0
+        for city in shops:
+            w = city.get_worst(budies=shops)
+            if w > worst:
+                worst = w
+        return worst
+
+    def build_population(self, repeative=False):
+        return super().build_population(repeative=repeative)
