@@ -8,10 +8,13 @@ def select(population: list, fitness_fn):
     """
     """
     fits = list(map(fitness_fn, population))
-    max_fit = max(fits)
+    max_fit = max(fits, key=lambda f: -1 if f == float('inf') else f)
     chances = []
     for fit in fits:
-        chance = (max_fit-fit)+1
+        if fit == float('inf'):
+            chance = 0
+        else:
+            chance = (max_fit-fit)+1
         if chances:
             chances.append(chance+chances[-1])
         else:
@@ -68,5 +71,8 @@ def genetic_algorithm(population: list, gene_pool: list, fitness_fn, mutate_prob
     return {'population': population, 'best': min(population, key=fitness_fn), 'weight': fitness_fn(min(population, key=fitness_fn))}
 
 
-def genetic_serach(problem: GeneticProblem):
-    return genetic_algorithm(population=problem.population, gene_pool=problem.gene_pool, fitness_fn=problem.fitness_fn)
+def genetic_serach(problem: GeneticProblem,population=None):
+    if not population:
+        return genetic_algorithm(population=problem.population, gene_pool=problem.gene_pool, fitness_fn=problem.fitness_fn)
+    else:
+        return genetic_algorithm(population=population, gene_pool=problem.gene_pool, fitness_fn=problem.fitness_fn)
