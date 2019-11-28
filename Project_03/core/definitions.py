@@ -1,4 +1,5 @@
 import random
+from functools import lru_cache
 
 
 class City(object):
@@ -7,15 +8,14 @@ class City(object):
         self.neighbors = weights
         super().__init__()
 
-    def get_worst(self, budies):
+    @lru_cache(maxsize=None)
+    def get_worst(self, illegals):
         """
         """
         worst = 0
         for i, n in enumerate(self.neighbors):
-            if all(i != b.number for b in budies):
+            if i not in illegals:
                 worst = n if n > worst else worst
-        return worst
-
         return worst
 
     def __repr__(self):
@@ -37,15 +37,10 @@ class GeneticProblem(object):
         """
         population = []
         for i in range(100):
-            p = []
-            for l in range(self.len):
-                if repeative:
-                    p.append(random.choice(self.gene_pool))
-                else:
-                    r = random.choice(self.gene_pool)
-                    while r in p:
-                        r = random.choice(self.gene_pool)
-                    p.append(r)
+            if repeative:
+                p = random.sample(self.gene_pool, k=self.len)
+            else:
+                p = random.choices(self.gene_pool, k=self.len)
             population.append(p)
         return population
 
@@ -82,17 +77,21 @@ class ShopsProblem(GeneticProblem):
         """
         return [city for city in self.cities]
 
-    def fitness_fn(self, shops: list):
+    def fitness_fn(self, sample: list):
         """
         """
-        if len(shops) != len(set(shops)):
-            return float('inf')
-        worst = 0
-        for city in shops:
-            w = city.get_worst(budies=shops)
-            if w > worst:
-                worst = w
-        return worst
+        @lru_cache(maxsize=None)
+        def fn(shops):
+            if len(shops) != len(set(shops)):
+                return float('inf')
+            worst = 0
+            illegals = tuple([b.number for b in shops])
+            for city in shops:
+                w = city.get_worst(illegals=illegals)
+                if w > worst:
+                    worst = w
+            return worst
+        return fn(tuple(sample))
 
     def build_population(self, repeative=False):
         return super().build_population(repeative=repeative)
