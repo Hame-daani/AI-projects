@@ -16,7 +16,7 @@ def select(population: list, fitness_fn):
     x = population[i]
     i = random.choice(chances)
     y = population[i]
-    return x, y
+    return (x, y)
 
 
 def reproduce(x: list, y: list):
@@ -38,22 +38,24 @@ def mutate(child, genes: list):
 def genetic_algorithm(problem: GeneticProblem, population: list = None):
     """
     """
-    all_best_fit = float('inf')
+    all_best_fit = 0
     all_best = []
     if not population:
         population = problem.population
     num_gen = 0
-
     start_time = time.time()
 
     def finished():
         if problem.time_target:
             if time.time()-start_time >= problem.time_target:
+                print("\nTimes Up!")
                 return True
         if problem.fit_target:
-            pass
+            print("\nGet There!")
+            return True
         if problem.num_generation:
-            if problem.num_generation < num_gen:
+            if problem.num_generation <= num_gen:
+                print("\nGenerations Exceed!")
                 return True
         return False
     # main func
@@ -70,10 +72,10 @@ def genetic_algorithm(problem: GeneticProblem, population: list = None):
         population = new_population
         best = max(population, key=problem.fitness_fn)
         best_fit = problem.fitness_fn(best)
-        if all_best_fit >= best_fit:
+        if all_best_fit < best_fit:
             all_best_fit = best_fit
             all_best = best
         print(
-            f"Generation {num_gen}:{best_fit} | All Best = {all_best_fit} -> {all_best[:20]}", end='\r'
+            f"Generation {num_gen}:Best {best_fit} | All Best = {all_best_fit} -> {all_best[:20]}", end='\r'
         )
-    return {'population': population, 'best': best, 'fit': best_fit}
+    return {'population': population, 'best': all_best, 'fit': all_best_fit}
