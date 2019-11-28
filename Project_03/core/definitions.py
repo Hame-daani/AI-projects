@@ -13,9 +13,9 @@ class City(object):
         """
         """
         worst = 0
-        for i, n in enumerate(self.neighbors):
-            if i not in illegals:
-                worst = n if n > worst else worst
+        for neigh_index, neigh_weight in enumerate(self.neighbors):
+            if neigh_index not in illegals:
+                worst = neigh_weight if neigh_weight > worst else worst
         return worst
 
     def __repr__(self):
@@ -26,9 +26,13 @@ class GeneticProblem(object):
     """
     """
 
-    def __init__(self, gene_pool: list, len: int):
-        self.gene_pool = gene_pool
-        self.len = len
+    def __init__(self, genes: list, target_len: int, mutate_probability=0.1, fit_target=0, time_target=0, num_genrations=1000):
+        self.mutate_probability = mutate_probability
+        self.fit_target = fit_target
+        self.time_target = time_target
+        self.num_generation = num_genrations
+        self.genes = genes
+        self.target_len = target_len
         self.population = self.build_population()
         super().__init__()
 
@@ -38,9 +42,9 @@ class GeneticProblem(object):
         population = []
         for i in range(100):
             if repeative:
-                p = random.choices(self.gene_pool, k=self.len)
+                p = random.choices(self.genes, k=self.target_len)
             else:
-                p = random.sample(self.gene_pool, k=self.len)
+                p = random.sample(self.genes, k=self.target_len)
             population.append(p)
         return population
 
@@ -54,11 +58,11 @@ class ShopsProblem(GeneticProblem):
     """
     """
 
-    def __init__(self, file: str, len: int):
+    def __init__(self, file: str, target_len: int, mutate_probability=0.1, fit_target=0, time_target=0, num_genrations=1000):
         self.cities = self.get_cities(file)
-        gene_pool = self.get_genes()
-        self.longest = self.get_longest()
-        super().__init__(gene_pool=gene_pool, len=len)
+        self.longest = max([city.get_worst() for city in self.cities])
+        super().__init__(genes=self.cities, target_len=target_len, mutate_probability=mutate_probability,
+                         fit_target=fit_target, time_target=time_target, num_genrations=num_genrations)
 
     def get_cities(self, file: str):
         """
@@ -72,26 +76,6 @@ class ShopsProblem(GeneticProblem):
             row = list(map(int, row))
             cities.append(City(number=i, weights=row))
         return cities
-
-    def get_genes(self):
-        """
-        """
-        return [city for city in self.cities]
-
-    def get_longest(self):
-        longest = 0
-        for city in self.cities:
-            w = city.get_worst()
-            if w > longest:
-                longest = w
-        return longest
-
-    def get_victim(self, d, shops):
-        for city in self.cities:
-            if city in shops:
-                for i, n in enumerate(city.neighbors):
-                    if n == d:
-                        return (city.number, i)
 
     def fitness_fn(self, sample: list):
         """
