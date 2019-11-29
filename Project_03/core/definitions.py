@@ -88,3 +88,23 @@ class ShopsProblem(GeneticProblem):
 
     def build_population(self,num=100, repeative=False):
         return super().build_population(num,repeative=repeative)
+
+class WordProblem(GeneticProblem):
+    def __init__(self, target, mutate_probability=0.1, fit_target=0, time_target=0, num_genrations=1000, population_num=100):
+        u_case = [chr(x) for x in range(65, 91)]
+        l_case = [chr(x) for x in range(97, 123)]
+        numerals = [chr(x) for x in range(48, 58)]
+        self.genes=[]
+        self.genes.extend(u_case)
+        self.genes.extend(l_case)
+        self.genes.extend(numerals)
+        self.genes.extend(' ')
+        self.target = target
+        super().__init__(self.genes, target_len=len(target), mutate_probability=mutate_probability, fit_target=len(target), time_target=time_target, num_genrations=num_genrations, population_num=population_num)
+    
+    def fitness_fn(self, sample):
+        fitness = 0
+        for i,c in enumerate(sample):
+            if c == self.target[i]:
+                fitness+=1
+        return fitness

@@ -51,8 +51,9 @@ def genetic_algorithm(problem: GeneticProblem, population: list = None):
                 print("\nTimes Up!")
                 return True
         if problem.fit_target:
-            print("\nGet There!")
-            return True
+            if all_best_fit == problem.fit_target:
+                print("\nGet There!")
+                return True
         if problem.num_generation:
             if problem.num_generation <= num_gen:
                 print("\nGenerations Exceed!")
@@ -76,6 +77,6 @@ def genetic_algorithm(problem: GeneticProblem, population: list = None):
             all_best_fit = best_fit
             all_best = best
         print(
-            f"Generation {num_gen}:Best {best_fit} | All Best = {all_best_fit} -> {all_best[:20]}", end='\r'
+            f"Gen {num_gen}:{best_fit} | Best={all_best_fit}->{all_best[:28]}", end='\r'
         )
     return {'population': population, 'best': all_best, 'fit': all_best_fit}
