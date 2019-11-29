@@ -9,10 +9,13 @@ class City(object):
         super().__init__()
 
     @lru_cache(maxsize=None)
-    def get_worst(self, illegals=[]):
+    def get_closest(self, shops: tuple):
         """
         """
-        return max([weight for index, weight in enumerate(self.neighbors) if index not in illegals])
+        d = []
+        for city in shops:
+            d.append(self.neighbors[city])
+        return min(d)
 
     def __repr__(self):
         return f"c{self.number}"
@@ -57,7 +60,7 @@ class ShopsProblem(GeneticProblem):
 
     def __init__(self, file: str, target_len: int, mutate_probability=0.1, time_target=0, num_genrations=1000, population_num=100):
         self.cities = self.load_cities(file)
-        self.longest = max([city.get_worst() for city in self.cities])
+        self.longest = max([max(city.neighbors) for city in self.cities])
         super().__init__(genes=self.cities, target_len=target_len,
                          mutate_probability=mutate_probability, time_target=time_target, num_genrations=num_genrations, population_num=population_num)
 
@@ -74,37 +77,26 @@ class ShopsProblem(GeneticProblem):
             cities.append(City(number=i, weights=row))
         return cities
 
+    def isValid(self, sample):
+        if len(sample) != len(set(sample)):
+            return False
+        return True
+
     def fitness_fn(self, sample: list):
         """
         """
         @lru_cache(maxsize=None)
         def fn(shops):
-            if len(shops) != len(set(shops)):
-                return 0
-            illegals = tuple([b.number for b in shops])
-            worst = max([city.get_worst(illegals=illegals) for city in shops])
+            d = []
+            for city in self.cities:
+                if city.number not in shops:
+                    d.append(city.get_closest(shops))
+            worst = max(d)
             return self.longest - worst
-        return fn(tuple(sample))
+        if len(sample) != len(set(sample)):
+            return 0
+        shops = [b.number for b in sample]
+        return fn(tuple(shops))
 
-    def build_population(self,num=100, repeative=False):
-        return super().build_population(num,repeative=repeative)
-
-class WordProblem(GeneticProblem):
-    def __init__(self, target, mutate_probability=0.1, fit_target=0, time_target=0, num_genrations=1000, population_num=100):
-        u_case = [chr(x) for x in range(65, 91)]
-        l_case = [chr(x) for x in range(97, 123)]
-        numerals = [chr(x) for x in range(48, 58)]
-        self.genes=[]
-        self.genes.extend(u_case)
-        self.genes.extend(l_case)
-        self.genes.extend(numerals)
-        self.genes.extend(' ')
-        self.target = target
-        super().__init__(self.genes, target_len=len(target), mutate_probability=mutate_probability, fit_target=len(target), time_target=time_target, num_genrations=num_genrations, population_num=population_num)
-    
-    def fitness_fn(self, sample):
-        fitness = 0
-        for i,c in enumerate(sample):
-            if c == self.target[i]:
-                fitness+=1
-        return fitness
+    def build_population(self, num=100, repeative=False):
+        return super().build_population(num, repeative=repeative)

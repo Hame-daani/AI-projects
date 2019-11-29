@@ -66,6 +66,10 @@ def genetic_algorithm(problem: GeneticProblem, population: list = None):
         for i in range(len(population)):
             x, y = select(population, problem.fitness_fn)
             child = reproduce(x, y)
+            # while(not problem.isValid(child)):
+            #     problem.fitness_fn(child)
+            #     x, y = select(population, problem.fitness_fn)
+            #     child = reproduce(x, y)
             p = random.uniform(0, 1)
             if p < problem.mutate_probability:
                 child = mutate(child, problem.genes)
@@ -73,10 +77,10 @@ def genetic_algorithm(problem: GeneticProblem, population: list = None):
         population = new_population
         best = max(population, key=problem.fitness_fn)
         best_fit = problem.fitness_fn(best)
-        if all_best_fit < best_fit:
+        if all_best_fit <= best_fit:
             all_best_fit = best_fit
             all_best = best
         print(
-            f"Gen {num_gen}:{best_fit} | Best={all_best_fit}->{all_best[:28]}", end='\r'
+            f"Gen {num_gen}:{problem.longest - best_fit} | Best={problem.longest - all_best_fit}->{all_best[:20]}", end='\r'
         )
     return {'population': population, 'best': all_best, 'fit': all_best_fit}
