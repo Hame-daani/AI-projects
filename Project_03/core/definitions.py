@@ -18,7 +18,7 @@ class City(object):
         return min(d)
 
     def __repr__(self):
-        return f"c{self.number}"
+        return f"{self.number}"
 
 
 class GeneticProblem(object):
@@ -33,6 +33,7 @@ class GeneticProblem(object):
         self.genes = genes
         self.target_len = target_len
         self.population_num = population_num
+        self.fits = []
         self.population = self.build_population(population_num)
         super().__init__()
 
@@ -51,16 +52,19 @@ class GeneticProblem(object):
     def fitness_fn(self, sample: list):
         """
         """
-        return 1
+        return NotImplementedError
+
+    def evaluate(self, population):
+        fits = list(map(self.fitness_fn, population))
+        self.fits = fits
 
     def select(self, population: list, fitness_fn):
         """
         """
-        fits = list(map(fitness_fn, population))
         chances = []
-        for i, chance in enumerate(fits):
-            for c in range(chance):
-                chances.append(i)
+        for i, chance in enumerate(self.fits):
+            l = [i] * chance
+            chances.extend(l)
         i = random.choice(chances)
         x = population[i]
         i = random.choice(chances)
@@ -86,7 +90,7 @@ class ShopsProblem(GeneticProblem):
     """
     """
 
-    def __init__(self, file: str, target_len: int, mutate_probability=0.1, time_target=0, num_genrations=1000, population_num=100):
+    def __init__(self, file: str, target_len: int, mutate_probability=0.1, time_target=0, fit_target=0, num_genrations=1000, population_num=100):
         self.cities = self.load_cities(file)
         self.longest = max([max(city.neighbors) for city in self.cities])
         super().__init__(genes=self.cities, target_len=target_len,
@@ -116,11 +120,18 @@ class ShopsProblem(GeneticProblem):
         @lru_cache(maxsize=None)
         def fn(shops):
             d = []
-            for city in self.cities:
-                if city.number not in shops:
-                    d.append(city.get_closest(shops))
-            worst = max(d)
+            for shop_index in shops:
+                d.append(self.cities[shop_index].neighbors)
+            w = []
+            for i in range(len(self.cities)):
+                j = [s[i] for s in d]
+                if j.count(0):
+                    continue
+                best = min(j)
+                w.append(best)
+            worst = max(w)
             return self.longest - worst
+        # main func
         if len(sample) != len(set(sample)):
             return 0
         shops = [b.number for b in sample]
