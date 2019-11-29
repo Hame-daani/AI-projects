@@ -53,6 +53,34 @@ class GeneticProblem(object):
         """
         return 1
 
+    def select(self, population: list, fitness_fn):
+        """
+        """
+        fits = list(map(fitness_fn, population))
+        chances = []
+        for i, chance in enumerate(fits):
+            for c in range(chance):
+                chances.append(i)
+        i = random.choice(chances)
+        x = population[i]
+        i = random.choice(chances)
+        y = population[i]
+        return (x, y)
+
+    def reproduce(self, x: list, y: list):
+        """
+        """
+        n = len(x)
+        c = random.randint(0, n-1)
+        child = x[:c] + y[c:]
+        return child
+
+    def mutate(self, child, genes: list):
+        n = len(child)
+        c = random.randint(0, n-1)
+        new_gene = random.choice(genes)
+        return child[:c] + [new_gene] + child[c + 1:]
+
 
 class ShopsProblem(GeneticProblem):
     """
