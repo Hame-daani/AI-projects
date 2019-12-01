@@ -35,10 +35,10 @@ class GeneticProblem(object):
         self.target_len = target_len
         self.population_num = population_num
         self.fits = []
-        self.population = self.build_population(population_num)
+        self.population = self.init_population(population_num)
         super().__init__()
 
-    def build_population(self, num=100, repeative=True):
+    def init_population(self, num=100, repeative=True):
         """
         """
         population = []
@@ -55,8 +55,8 @@ class GeneticProblem(object):
         """
         return NotImplementedError
 
-    def evaluate(self, population):
-        fits = list(map(self.fitness_fn, population))
+    def evaluate(self):
+        fits = list(map(self.fitness_fn, self.population))
         self.fits = fits
 
     def select(self, population: list):
@@ -77,10 +77,10 @@ class GeneticProblem(object):
         child = x[:c] + y[c:]
         return child
 
-    def mutate(self, child, genes: list):
+    def mutate(self, child):
         n = len(child)
         c = random.randint(0, n-1)
-        new_gene = random.choice(genes)
+        new_gene = random.choice(self.genes)
         return child[:c] + [new_gene] + child[c + 1:]
 
 
@@ -135,5 +135,5 @@ class ShopsProblem(GeneticProblem):
         shops = [b.number for b in sample]
         return fn(tuple(shops))
 
-    def build_population(self, num=100, repeative=False):
-        return super().build_population(num, repeative=repeative)
+    def init_population(self, num=100, repeative=False):
+        return super().init_population(num, repeative=repeative)
