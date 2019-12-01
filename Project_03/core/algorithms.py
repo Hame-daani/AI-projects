@@ -34,17 +34,17 @@ def genetic_algorithm(problem: GeneticProblem, population: list = None):
         new_population = []
         problem.evaluate(population)
         for i in range(len(population)):
-            x, y = problem.select(population, problem.fitness_fn)
+            x, y = problem.select(population)
             child = problem.reproduce(x, y)
             while(not problem.isValid(child)):
-                x, y = problem.select(population, problem.fitness_fn)
+                x, y = problem.select(population)
                 child = problem.reproduce(x, y)
             p = random.uniform(0, 1)
             if p < problem.mutate_probability:
                 child = problem.mutate(child, problem.genes)
             new_population.append(child)
         best_fit = max(problem.fits)
-        if all_best_fit <= best_fit:
+        if all_best_fit < best_fit:
             all_best_fit = best_fit
             all_best = population[problem.fits.index(best_fit)]
         population = new_population

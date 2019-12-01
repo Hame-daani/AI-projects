@@ -1,5 +1,6 @@
 import random
 from functools import lru_cache
+import numpy.random as nprand
 
 
 class City(object):
@@ -58,17 +59,14 @@ class GeneticProblem(object):
         fits = list(map(self.fitness_fn, population))
         self.fits = fits
 
-    def select(self, population: list, fitness_fn):
+    def select(self, population: list):
         """
         """
-        chances = []
-        for i, chance in enumerate(self.fits):
-            l = [i] * chance
-            chances.extend(l)
-        i = random.choice(chances)
-        x = population[i]
-        i = random.choice(chances)
-        y = population[i]
+        f_sum = sum(self.fits)
+        chances = [f/f_sum for f in self.fits]
+        draw = nprand.choice(self.population_num, 2, p=chances)
+        x = population[draw[0]]
+        y = population[draw[1]]
         return (x, y)
 
     def reproduce(self, x: list, y: list):
