@@ -8,7 +8,6 @@ def genetic_algorithm(problem: GeneticProblem):
     """
     """
     all_best_fit = float('inf')
-    all_best = []
     num_gen = 0
     start_time = time.time()
 
@@ -42,11 +41,11 @@ def genetic_algorithm(problem: GeneticProblem):
                 child = problem.mutate(child)
             new_population.append(child)
         best_fit = min(problem.fits)
+        best = problem.population[problem.fits.index(best_fit)]
         if all_best_fit > best_fit:
             all_best_fit = best_fit
-            all_best = problem.population[problem.fits.index(best_fit)]
         problem.population = new_population
         print(
-            f"Generation {num_gen}:Best {best_fit} | All Best = {all_best_fit} -> {all_best[:15]}", end='\r'
+            f"Generation {num_gen}: Best {best_fit} -> {best[:15]}", end='\r'
         )
-    return {'population': problem.population, 'best': all_best, 'fit': all_best_fit}
+    return {'population': problem.population, 'best': problem.population[problem.fits.index(all_best_fit)], 'fit': all_best_fit}
