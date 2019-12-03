@@ -15,7 +15,7 @@ class City(object):
         """
         d = []
         for city in shops:
-            d.append(self.neighbors[city])
+            d.append(self.neighbors[city.number])
         return min(d)
 
     def __repr__(self):
@@ -53,20 +53,25 @@ class GeneticProblem(object):
     def fitness_fn(self, sample: list):
         """
         """
-        return NotImplementedError
+        raise NotImplementedError
 
     def evaluate(self):
         fits = list(map(self.fitness_fn, self.population))
         self.fits = fits
+        self.get_chances()
 
-    def select(self, population: list):
+    def get_chances(self):
+        raise NotImplementedError
+
+    def isValid(self, sample):
+        raise NotImplementedError
+
+    def select(self):
         """
         """
-        f_sum = sum(self.fits)
-        chances = [f/f_sum for f in self.fits]
-        draw = nprand.choice(self.population_num, 2, p=chances)
-        x = population[draw[0]]
-        y = population[draw[1]]
+        draw = nprand.choice(self.population_num, 2, p=self.chances)
+        x = self.population[draw[0]]
+        y = self.population[draw[1]]
         return (x, y)
 
     def reproduce(self, x: list, y: list):
@@ -81,7 +86,12 @@ class GeneticProblem(object):
         n = len(child)
         c = random.randint(0, n-1)
         new_gene = random.choice(self.genes)
-        return child[:c] + [new_gene] + child[c + 1:]
+        new_child = child[:c] + [new_gene] + child[c + 1:]
+        while not self.isValid(child):
+            c = random.randint(0, n-1)
+            new_gene = random.choice(self.genes)
+            new_child = child[:c] + [new_gene] + child[c + 1:]
+        return new_child
 
 
 class ShopsProblem(GeneticProblem):
@@ -117,23 +127,22 @@ class ShopsProblem(GeneticProblem):
         """
         @lru_cache(maxsize=None)
         def fn(shops):
-            d = []
-            for shop_index in shops:
-                d.append(self.cities[shop_index].neighbors)
             w = []
-            for i in range(len(self.cities)):
-                j = [s[i] for s in d]
-                if j.count(0):
-                    continue
-                best = min(j)
-                w.append(best)
+            for city in self.cities:
+                w.append(city.get_closest(shops))
             worst = max(w)
-            return self.longest - worst
+            return worst
         # main func
-        if len(sample) != len(set(sample)):
-            return 0
-        shops = [b.number for b in sample]
-        return fn(tuple(shops))
+        return fn(tuple(sample))
 
     def init_population(self, num=100, repeative=False):
         return super().init_population(num, repeative=repeative)
+
+    def get_chances(self):
+        f_max = max(self.fits)
+        fits = [f_max-f for f in self.fits]
+        f_sum = sum(fits)
+        if f_sum:
+            self.chances = [f/f_sum for f in fits]
+        else:
+            self.chances = [1/self.population_num]*self.population_num

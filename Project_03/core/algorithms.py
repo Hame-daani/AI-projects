@@ -7,7 +7,7 @@ from .definitions import GeneticProblem
 def genetic_algorithm(problem: GeneticProblem):
     """
     """
-    all_best_fit = 0
+    all_best_fit = float('inf')
     all_best = []
     num_gen = 0
     start_time = time.time()
@@ -32,21 +32,21 @@ def genetic_algorithm(problem: GeneticProblem):
         new_population = []
         problem.evaluate()
         for i in range(len(problem.population)):
-            x, y = problem.select(problem.population)
+            x, y = problem.select()
             child = problem.reproduce(x, y)
             while(not problem.isValid(child)):
-                x, y = problem.select(problem.population)
+                x, y = problem.select()
                 child = problem.reproduce(x, y)
             p = random.uniform(0, 1)
             if p < problem.mutate_probability:
                 child = problem.mutate(child)
             new_population.append(child)
-        best_fit = max(problem.fits)
-        if all_best_fit < best_fit:
+        best_fit = min(problem.fits)
+        if all_best_fit > best_fit:
             all_best_fit = best_fit
             all_best = problem.population[problem.fits.index(best_fit)]
         problem.population = new_population
         print(
-            f"Generation {num_gen}:Best {problem.longest - best_fit} | All Best = {problem.longest - all_best_fit} -> {all_best[:15]}", end='\r'
+            f"Generation {num_gen}:Best {best_fit} | All Best = {all_best_fit} -> {all_best[:15]}", end='\r'
         )
     return {'population': problem.population, 'best': all_best, 'fit': all_best_fit}
