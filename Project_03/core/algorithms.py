@@ -1,7 +1,7 @@
 import time
 import random
 from . import utils
-from .definitions import GeneticProblem, HillClimbingProblem, Node
+from .definitions import GeneticProblem, HillClimbingProblem, Node, StochasticHillClimbingProblem
 
 
 def genetic_algorithm(problem: GeneticProblem):
@@ -52,8 +52,8 @@ def genetic_algorithm(problem: GeneticProblem):
     return {'population': problem.population, 'best': all_best, 'fit': all_best_fit}
 
 
-def hill_climbing(problem: HillClimbingProblem):
-    for i in range(10):
+def hill_climbing(problem: HillClimbingProblem, steps=10):
+    for i in range(steps):
         print(f"Start {i+1} Time.")
         current = Node(problem.initial_state())
         while True:
@@ -62,4 +62,14 @@ def hill_climbing(problem: HillClimbingProblem):
                 break
             current = neighbor
             print(f"{problem.value(current)} -> {current.state}")
+    return current.state
+
+
+def stochastic_hill_climbing(problem: StochasticHillClimbingProblem, steps=50):
+    for i in range(steps):
+        print(f"{i+1} Time.")
+        current = Node(problem.initial_state())
+        neighbor = problem.select_neighbor(current)
+        current = neighbor
+        print(f"{problem.value(current)} -> {current.state}")
     return current.state

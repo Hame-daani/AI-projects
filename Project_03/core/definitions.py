@@ -202,3 +202,21 @@ class HillClimbingProblem(object):
         neighbors = node.expand(self)
         m = min(neighbors, key=self.value)
         return m
+
+
+class StochasticHillClimbingProblem(HillClimbingProblem):
+    def __init__(self, file, target_len):
+        super().__init__(file, target_len)
+
+    def select_neighbor(self, node):
+        neighbors = node.expand(self)
+        values = list(map(self.value, neighbors))
+        v_max = max(values)
+        values = [v_max-v for v in values]
+        v_sum = sum(values)
+        if v_sum:
+            chances = [v/v_sum for v in values]
+        else:
+            chances = [1/len(neighbors)]*len(neighbors)
+        draw = nprand.choice(len(neighbors), 1, p=chances)
+        return neighbors[draw[0]]
