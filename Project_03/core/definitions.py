@@ -101,7 +101,8 @@ class ShopsProblem(GeneticProblem):
     def __init__(self, file: str, target_len: int, mutate_probability=0.1, time_target=0, fit_target=0, num_genrations=1000, population_num=100):
         self.cities = self.load_cities(file)
         super().__init__(genes=self.cities, target_len=target_len,
-                         mutate_probability=mutate_probability, time_target=time_target, num_genrations=num_genrations, population_num=population_num)
+                         mutate_probability=mutate_probability, time_target=time_target, num_genrations=num_genrations, population_num=population_num,
+                         fit_target=fit_target)
 
     def load_cities(self, file: str):
         """
