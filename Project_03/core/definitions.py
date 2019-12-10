@@ -146,3 +146,59 @@ class ShopsProblem(GeneticProblem):
             self.chances = [f/f_sum for f in fits]
         else:
             self.chances = [1/self.population_num]*self.population_num
+
+
+class Node(object):
+    def __init__(self, state):
+        self.state = state
+        super().__init__()
+
+    def expand(self, problem):
+        neighbors = []
+        for i in range(len(self.state)):
+            for city in problem.cities:
+                if city not in self.state:
+                    neighbors.append(Node(
+                        self.state[:i]+[city]+self.state[i+1:]))
+        return neighbors
+
+
+class HillClimbingProblem(object):
+    def __init__(self, file: str, target_len: int):
+        self.cities = self.load_cities(file)
+        self.target_len = target_len
+        super().__init__()
+
+    def initial_state(self):
+        return random.sample(self.cities, k=self.target_len)
+
+    def load_cities(self, file: str):
+        """
+        """
+        cities = []
+        with open(file) as f:
+            lines = f.readlines()
+        f.close()
+        for i, line in enumerate(lines):
+            row = line.strip('\n').split()
+            row = list(map(int, row))
+            cities.append(City(number=i, weights=row))
+        return cities
+
+    def value(self, node):
+        """
+        """
+        @lru_cache(maxsize=None)
+        def fn(shops):
+            w = []
+            for city in self.cities:
+                w.append(city.get_closest(shops))
+            worst = max(w)
+            return worst
+        # main func
+        return fn(tuple(node.state))
+
+    def select_neighbor(self, node: Node):
+        neighbors = node.expand(self)
+        m = min(neighbors, key=self.value)
+        return m
