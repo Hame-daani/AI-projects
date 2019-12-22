@@ -4,24 +4,25 @@ from core.objects import Board
 # A : Ai
 # B : Human
 
+block_size = 20
+wall_size = 50
+
 
 class Game:
     def __init__(self, row=10, column=10, width=None, height=None, turn='B'):
+        self.marign = 50
         if not width or not height:
-            self.width = column*40
-            self.height = row*40
+            self.width = ((column+1)*block_size)+(column*wall_size)+(self.marign*2)
+            self.height = ((row+1)*block_size)+(row*wall_size)+(self.marign*2)
         else:
             self.width = width
             self.height = height
-        self.marign = self.height*0.07
         self.board = Board(row, column, x=self.marign, y=self.marign)
         self.turn = turn
         pygame.init()
         self.screen = pygame.display.set_mode([self.width, self.height])
+        # show
         self.screen.fill(255)
-        self.show()
-
-    def show(self):
         self.board.show(self.screen)
         pygame.display.flip()
 
@@ -42,19 +43,8 @@ class Game:
                         # get the current position of the cursor
                         x = pygame.mouse.get_pos()[0]
                         y = pygame.mouse.get_pos()[1]
+                        self.handle_click(x, y)
 
-                        # valid_x = self.width-self.marign
-                        # valid_y = self.height-self.marign
-                        # if x < valid_x or y < valid_y:
-                        #     continue
-                        # valid_x = self.width-self.marign
-                        # valid_y = self.height-self.marign
-
-                        # check whether it was a not set wall that was clicked
-                        wall1, wall2 = self.board.get_wall(x, y)
-                        if not wall1:
-                            # invalid click
-                            continue
-                        if not wall2:
-                            # upper or side walls
-                            pass
+    def handle_click(self, x, y):
+        walls = self.board.get_walls(x, y)
+        print(walls)

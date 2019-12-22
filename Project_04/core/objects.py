@@ -9,8 +9,8 @@ empty = pygame.image.load("pics/empty.png")
 A = pygame.image.load("pics/A.png")
 B = pygame.image.load("pics/B.png")
 
-block_size = 4
-wall_size = 26
+block_size = 20
+wall_size = 50
 
 
 class Board(object):
@@ -28,8 +28,14 @@ class Board(object):
         ]
         super().__init__()
 
-    def get_wall(self, x, y):
-        return None, None
+    def get_walls(self, x, y):
+        walls = []
+        for row in self.grid:
+            for box in row:
+                for wall in box.walls:
+                    if wall.trigred(x, y):
+                        walls.append(wall)
+        return walls
 
     def show(self, screen):
         for row in self.grid:
@@ -44,12 +50,14 @@ class Box(object):
         self.row = row
         self.column = column
         self.taken = taken
-        self.upper_wall = Wall(x=self.x+block_size, y=self.y, upside=False)
-        self.bottom_wall = Wall(x=self.x+block_size,
-                                y=self.y+block_size+wall_size, upside=False)
-        self.left_wall = Wall(x=self.x, y=self.y+block_size, upside=True)
-        self.right_wall = Wall(x=self.x+block_size +
-                               wall_size, y=self.y+block_size, upside=True)
+        self.walls = [
+            RightWall(self, x=self.x+block_size + wall_size,
+                      y=self.y+block_size),
+            BottomWall(self, x=self.x+block_size,
+                       y=self.y+block_size+wall_size),
+            LeftWall(self, x=self.x, y=self.y+block_size),
+            UpperWall(self, x=self.x+block_size, y=self.y),
+        ]
         super().__init__()
 
     def show(self, screen):
@@ -68,28 +76,112 @@ class Box(object):
             screen.blit(A, (x, y))
         elif self.taken == 'B':
             screen.blit(B, (x, y))
-        self.upper_wall.show(screen)
-        self.bottom_wall.show(screen)
-        self.left_wall.show(screen)
-        self.right_wall.show(screen)
+        for wall in self.walls:
+            wall.show(screen)
+
+    def get_wall(self, x, y):
+        if self.upper_wall.trigred(x, y):
+            return self.upper_wall
+        if self.bottom_wall.trigred(x, y):
+            return self.bottom_wall
+        if self.left_wall.trigred(x, y):
+            return self.left_wall
+        if self.right_wall.trigred(x, y):
+            return self.right_wall
 
 
 class Wall(object):
-    def __init__(self, x, y,  upside, taken=False):
-        self.upside = upside
+    def __init__(self, box, x, y, taken=False):
+        self.box = box
         self.taken = taken
         self.x = x
         self.y = y
         super().__init__()
 
     def show(self, screen):
+        raise NotImplementedError
+
+    def trigred(self, x, y):
+        raise NotImplementedError
+
+    def __repr__(self):
+        return f"({self.box.row+1},{self.box.column+1})"
+
+class RightWall(Wall):
+    def __init__(self, box, x, y, taken=False):
+        super().__init__(box, x, y, taken=taken)
+
+    def show(self, screen):
         if self.taken:
-            if self.upside:
-                screen.blit(lineY, (self.x, self.y))
-            else:
-                screen.blit(lineX, (self.x, self.y))
+            screen.blit(lineY, (self.x, self.y))
         else:
-            if self.upside:
-                screen.blit(lineYempty, (self.x, self.y))
-            else:
-                screen.blit(lineXempty, (self.x, self.y))
+            screen.blit(lineYempty, (self.x, self.y))
+
+    def __repr__(self):
+        return super().__repr__()+"Right"
+
+    def trigred(self, x, y):
+        if x >= self.x and x <= self.x+block_size:
+            if y >= self.y and y <= self.y+wall_size:
+                return True
+        return False
+
+
+class LeftWall(Wall):
+    def __init__(self, box, x, y, taken=False):
+        super().__init__(box, x, y, taken=taken)
+
+    def show(self, screen):
+        if self.taken:
+            screen.blit(lineY, (self.x, self.y))
+        else:
+            screen.blit(lineYempty, (self.x, self.y))
+
+    def __repr__(self):
+        return super().__repr__()+"Left"
+
+    def trigred(self, x, y):
+        if x >= self.x and x <= self.x+block_size:
+            if y >= self.y and y <= self.y+wall_size:
+                return True
+        return False
+
+
+class UpperWall(Wall):
+    def __init__(self, box, x, y, taken=False):
+        super().__init__(box, x, y, taken=taken)
+
+    def show(self, screen):
+        if self.taken:
+            screen.blit(lineX, (self.x, self.y))
+        else:
+            screen.blit(lineXempty, (self.x, self.y))
+
+    def __repr__(self):
+        return super().__repr__()+"Upper"
+
+    def trigred(self, x, y):
+        if x >= self.x and x <= self.x+wall_size:
+            if y >= self.y and y <= self.y+block_size:
+                return True
+        return False
+
+
+class BottomWall(Wall):
+    def __init__(self, box, x, y, taken=False):
+        super().__init__(box, x, y, taken=taken)
+
+    def show(self, screen):
+        if self.taken:
+            screen.blit(lineX, (self.x, self.y))
+        else:
+            screen.blit(lineXempty, (self.x, self.y))
+
+    def __repr__(self):
+        return super().__repr__()+"Bottom"
+
+    def trigred(self, x, y):
+        if x >= self.x and x <= self.x+wall_size:
+            if y >= self.y and y <= self.y+block_size:
+                return True
+        return False
