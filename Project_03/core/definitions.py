@@ -1,6 +1,7 @@
 import random
 from functools import lru_cache
 import numpy.random as nprand
+import time
 
 
 class City(object):
@@ -19,7 +20,7 @@ class City(object):
         return min(d)
 
     def __repr__(self):
-        return f"c{self.number}"
+        return f"{self.number}"
 
 
 class GeneticProblem(object):
@@ -139,8 +140,8 @@ class ShopsProblem(GeneticProblem):
         return super().init_population(num, repeative=repeative)
 
     def get_chances(self):
-        f_max = max(self.fits)
-        fits = [f_max-f for f in self.fits]
+        # f_max = max(self.fits)
+        fits = [1/f for f in self.fits]
         f_sum = sum(fits)
         if f_sum:
             self.chances = [f/f_sum for f in fits]
@@ -155,18 +156,24 @@ class Node(object):
 
     def expand(self, problem):
         neighbors = []
+        values = []
+        curr_value = problem.value(self)
         for i in range(len(self.state)):
             for city in problem.cities:
                 if city not in self.state:
-                    neighbors.append(Node(
-                        self.state[:i]+[city]+self.state[i+1:]))
-        return neighbors
+                    n = Node(self.state[:i]+[city]+self.state[i+1:])
+                    n_value = problem.value(n)
+                    if n_value < curr_value:
+                        neighbors.append(n)
+                        values.append(n_value)
+        return values,neighbors
 
 
 class HillClimbingProblem(object):
-    def __init__(self, file: str, target_len: int):
+    def __init__(self, file: str, target_len: int, steps: int):
         self.cities = self.load_cities(file)
         self.target_len = target_len
+        self.steps = steps
         super().__init__()
 
     def initial_state(self):
@@ -199,18 +206,21 @@ class HillClimbingProblem(object):
         return fn(tuple(node.state))
 
     def select_neighbor(self, node: Node):
-        neighbors = node.expand(self)
-        m = min(neighbors, key=self.value)
-        return m
+        values,neighbors = node.expand(self)
+        if not neighbors:
+            return None
+        m = min(values)
+        return neighbors[values.index(m)]
 
 
 class StochasticHillClimbingProblem(HillClimbingProblem):
-    def __init__(self, file, target_len):
-        super().__init__(file, target_len)
+    def __init__(self, file, target_len, steps):
+        super().__init__(file, target_len, steps)
 
     def select_neighbor(self, node):
-        neighbors = node.expand(self)
-        values = list(map(self.value, neighbors))
+        values,neighbors = node.expand(self)
+        if not neighbors:
+            return None
         v_max = max(values)
         values = [v_max-v for v in values]
         v_sum = sum(values)
@@ -220,3 +230,19 @@ class StochasticHillClimbingProblem(HillClimbingProblem):
             chances = [1/len(neighbors)]*len(neighbors)
         draw = nprand.choice(len(neighbors), 1, p=chances)
         return neighbors[draw[0]]
+
+
+class FirstChoiceHillClimbingProblem(HillClimbingProblem):
+    def __init__(self, file, target_len, steps):
+        super().__init__(file, target_len, steps)
+
+    def select_neighbor(self, node):
+        start_time = time.time()
+        while True:
+            i = random.randint(0, len(node.state)-1)
+            c = random.choice(self.cities)
+            while c in node.state:
+                c = random.choice(self.cities)
+            neighbor = Node(node.state[:i]+[c]+node.state[i+1:])
+            if self.value(neighbor) < self.value(node) or time.time()-start_time > 2:
+                return neighbor

@@ -1,9 +1,9 @@
-row_cells = 10
-column_cells = 10
-num_dots = 5
+row_cells = 20
+column_cells = 20
+num_dots = 1
 screen_width = 500
 screen_height = 500
-speed = 500
+speed = 50
 
 # colors
 black = color(0, 0, 0)

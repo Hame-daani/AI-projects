@@ -52,24 +52,27 @@ def genetic_algorithm(problem: GeneticProblem):
     return {'population': problem.population, 'best': all_best, 'fit': all_best_fit}
 
 
-def hill_climbing(problem: HillClimbingProblem, steps=10):
-    for i in range(steps):
-        print(f"Start {i+1} Time.")
-        current = Node(problem.initial_state())
-        while True:
-            neighbor = problem.select_neighbor(current)
-            if problem.value(neighbor) >= problem.value(current):
-                break
-            current = neighbor
-            print(f"{problem.value(current)} -> {current.state}")
-    return current.state
-
-
-def stochastic_hill_climbing(problem: StochasticHillClimbingProblem, steps=50):
-    for i in range(steps):
-        print(f"{i+1} Time.")
-        current = Node(problem.initial_state())
+def hill_climbing(problem: HillClimbingProblem):
+    current = Node(problem.initial_state())
+    while True:
+        print(f"current best: {problem.value(current)}")
         neighbor = problem.select_neighbor(current)
+        if not neighbor or problem.value(neighbor) > problem.value(current):
+            break
         current = neighbor
-        print(f"{problem.value(current)} -> {current.state}")
-    return current.state
+    return current
+
+
+def random_restart_hill_climbing(problem):
+    all_best = None
+    all_best_value = float('inf')
+    for i in range(problem.steps):
+        result = hill_climbing(problem)
+        value = problem.value(result)
+        if all_best_value > value:
+            all_best_value = value
+            all_best = result
+        print(
+            f"All best:{all_best_value} step:{i+1}->{value}**********", end='\n')
+    print()
+    return all_best
