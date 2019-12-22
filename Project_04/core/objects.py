@@ -9,12 +9,15 @@ empty = pygame.image.load("pics/empty.png")
 A = pygame.image.load("pics/A.png")
 B = pygame.image.load("pics/B.png")
 
+block_size = 4
+wall_size = 26
+
 
 class Board(object):
     def __init__(self, row_num, column_num, x, y):
         self.x = x
         self.y = y
-        self.pixle = 34
+        self.pixle = block_size+wall_size
         self.row_num = row_num
         self.column_num = column_num
         self.grid = [
@@ -26,7 +29,7 @@ class Board(object):
         super().__init__()
 
     def get_wall(self, x, y):
-        pass
+        return None, None
 
     def show(self, screen):
         for row in self.grid:
@@ -41,22 +44,24 @@ class Box(object):
         self.row = row
         self.column = column
         self.taken = taken
-        self.upper_wall = Wall(x=self.x+4, y=self.y, upside=False)
-        self.bottom_wall = Wall(x=self.x+4, y=self.y+30, upside=False)
-        self.left_wall = Wall(x=self.x, y=self.y+4, upside=True)
-        self.right_wall = Wall(x=self.x+30, y=self.y+4, upside=True)
+        self.upper_wall = Wall(x=self.x+block_size, y=self.y, upside=False)
+        self.bottom_wall = Wall(x=self.x+block_size,
+                                y=self.y+block_size+wall_size, upside=False)
+        self.left_wall = Wall(x=self.x, y=self.y+block_size, upside=True)
+        self.right_wall = Wall(x=self.x+block_size +
+                               wall_size, y=self.y+block_size, upside=True)
         super().__init__()
 
     def show(self, screen):
         x, y = self.x, self.y
         screen.blit(block, (x, y))
-        x, y = self.x+30, self.y
+        x, y = self.x+block_size+wall_size, self.y
         screen.blit(block, (x, y))
-        x, y = self.x, self.y+30
+        x, y = self.x, self.y+block_size+wall_size
         screen.blit(block, (x, y))
-        x, y = self.x+30, self.y+30
+        x, y = self.x+block_size+wall_size, self.y+block_size+wall_size
         screen.blit(block, (x, y))
-        x, y = self.x+4, self.y+4
+        x, y = self.x+block_size, self.y+block_size
         if not self.taken:
             screen.blit(empty, (x, y))
         elif self.taken == 'A':

@@ -6,7 +6,7 @@ from core.objects import Board
 
 
 class Game:
-    def __init__(self, row=5, column=5, width=None, height=None, turn='B'):
+    def __init__(self, row=10, column=10, width=None, height=None, turn='B'):
         if not width or not height:
             self.width = column*40
             self.height = row*40
@@ -58,4 +58,3 @@ class Game:
                         if not wall2:
                             # upper or side walls
                             pass
-                        wall_x, wall_y = self.get_wall(x, y)
