@@ -8,6 +8,8 @@ block = pygame.image.load("pics/block.png")
 empty = pygame.image.load("pics/empty.png")
 A = pygame.image.load("pics/A.png")
 B = pygame.image.load("pics/B.png")
+last_X = pygame.image.load("pics/last_X.png")
+last_Y = pygame.image.load("pics/last_Y.png")
 
 block_size = 20
 wall_size = 50
@@ -104,8 +106,12 @@ class Wall(object):
     def trigred(self, x, y):
         raise NotImplementedError
 
+    def select(self, screen):
+        raise NotImplementedError
+
     def __repr__(self):
         return f"({self.box.row+1},{self.box.column+1})"
+
 
 class RightWall(Wall):
     def __init__(self, box, x, y, taken=False):
@@ -116,6 +122,10 @@ class RightWall(Wall):
             screen.blit(lineY, (self.x, self.y))
         else:
             screen.blit(lineYempty, (self.x, self.y))
+
+    def select(self, screen):
+        screen.blit(last_Y, (self.x, self.y))
+        self.taken = True
 
     def __repr__(self):
         return super().__repr__()+"Right"
@@ -136,6 +146,10 @@ class LeftWall(Wall):
             screen.blit(lineY, (self.x, self.y))
         else:
             screen.blit(lineYempty, (self.x, self.y))
+
+    def select(self, screen):
+        screen.blit(last_Y, (self.x, self.y))
+        self.taken = True
 
     def __repr__(self):
         return super().__repr__()+"Left"
@@ -160,6 +174,10 @@ class UpperWall(Wall):
     def __repr__(self):
         return super().__repr__()+"Upper"
 
+    def select(self, screen):
+        screen.blit(last_X, (self.x, self.y))
+        self.taken = True
+
     def trigred(self, x, y):
         if x >= self.x and x <= self.x+wall_size:
             if y >= self.y and y <= self.y+block_size:
@@ -179,6 +197,10 @@ class BottomWall(Wall):
 
     def __repr__(self):
         return super().__repr__()+"Bottom"
+
+    def select(self, screen):
+        screen.blit(last_X, (self.x, self.y))
+        self.taken = True
 
     def trigred(self, x, y):
         if x >= self.x and x <= self.x+wall_size:

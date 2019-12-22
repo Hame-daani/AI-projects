@@ -12,7 +12,8 @@ class Game:
     def __init__(self, row=10, column=10, width=None, height=None, turn='B'):
         self.marign = 50
         if not width or not height:
-            self.width = ((column+1)*block_size)+(column*wall_size)+(self.marign*2)
+            self.width = ((column+1)*block_size) + \
+                (column*wall_size)+(self.marign*2)
             self.height = ((row+1)*block_size)+(row*wall_size)+(self.marign*2)
         else:
             self.width = width
@@ -25,6 +26,7 @@ class Game:
         self.screen.fill(255)
         self.board.show(self.screen)
         pygame.display.flip()
+        self.last_wall_clicked = None
 
     def run(self):
         while True:
@@ -43,8 +45,17 @@ class Game:
                         # get the current position of the cursor
                         x = pygame.mouse.get_pos()[0]
                         y = pygame.mouse.get_pos()[1]
-                        self.handle_click(x, y)
+                        r = self.handle_click(x, y)
+                        if r:
+                            pygame.display.flip()
 
     def handle_click(self, x, y):
         walls = self.board.get_walls(x, y)
-        print(walls)
+        if not walls or any(wall.taken for wall in walls):
+            return False
+        if self.last_wall_clicked:
+            self.last_wall_clicked.show(self.screen)
+        for wall in walls:
+            wall.select(self.screen)
+            self.last_wall_clicked = wall
+        return True
