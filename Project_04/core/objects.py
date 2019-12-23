@@ -1,4 +1,5 @@
 import pygame
+from copy import deepcopy
 
 lineX = pygame.image.load("pics/lineX.png")
 lineXempty = pygame.image.load("pics/lineXempty.png")
@@ -16,12 +17,14 @@ wall_size = 50
 
 
 class Board(object):
-    def __init__(self, row_num, column_num, x, y):
+    def __init__(self, row_num, column_num, x, y, turn):
         self.x = x
         self.y = y
+        self.turn = turn
         self.pixle = block_size+wall_size
         self.row_num = row_num
         self.column_num = column_num
+        self.boxes = {'A': 0, 'H': 0}
         self.grid = [
             [
                 Box(row, column, x=self.x+column*self.pixle, y=self.y+row*self.pixle) for column in range(column_num)
@@ -44,6 +47,21 @@ class Board(object):
             for box in row:
                 box.show(screen)
 
+    def result(self, move):
+        r = False
+        for wall in move:
+            wall.taken = True
+            if wall.box.isComplete():
+                wall.box.taken = self.turn
+                self.boxes[self.turn] += 1
+                r = True
+        if not r:
+            self.swap_turn()
+        return r
+
+    def swap_turn(self):
+        self.turn = 'A' if self.turn == 'H' else 'H'
+
 
 class Box(object):
     def __init__(self, row, column, x, y, taken=None):
@@ -62,6 +80,9 @@ class Box(object):
         ]
         super().__init__()
 
+    def isComplete(self):
+        return all(wall.taken for wall in self.walls)
+
     def show(self, screen):
         x, y = self.x, self.y
         screen.blit(block, (x, y))
@@ -76,7 +97,7 @@ class Box(object):
             screen.blit(empty, (x, y))
         elif self.taken == 'A':
             screen.blit(A, (x, y))
-        elif self.taken == 'B':
+        elif self.taken == 'H':
             screen.blit(B, (x, y))
         for wall in self.walls:
             wall.show(screen)
@@ -117,15 +138,14 @@ class RightWall(Wall):
     def __init__(self, box, x, y, taken=False):
         super().__init__(box, x, y, taken=taken)
 
-    def show(self, screen):
+    def show(self, screen, last=False):
         if self.taken:
-            screen.blit(lineY, (self.x, self.y))
+            if last:
+                screen.blit(last_Y, (self.x, self.y))
+            else:
+                screen.blit(lineY, (self.x, self.y))
         else:
             screen.blit(lineYempty, (self.x, self.y))
-
-    def select(self, screen):
-        screen.blit(last_Y, (self.x, self.y))
-        self.taken = True
 
     def __repr__(self):
         return super().__repr__()+"Right"
@@ -141,15 +161,14 @@ class LeftWall(Wall):
     def __init__(self, box, x, y, taken=False):
         super().__init__(box, x, y, taken=taken)
 
-    def show(self, screen):
+    def show(self, screen, last=False):
         if self.taken:
-            screen.blit(lineY, (self.x, self.y))
+            if last:
+                screen.blit(last_Y, (self.x, self.y))
+            else:
+                screen.blit(lineY, (self.x, self.y))
         else:
             screen.blit(lineYempty, (self.x, self.y))
-
-    def select(self, screen):
-        screen.blit(last_Y, (self.x, self.y))
-        self.taken = True
 
     def __repr__(self):
         return super().__repr__()+"Left"
@@ -165,18 +184,17 @@ class UpperWall(Wall):
     def __init__(self, box, x, y, taken=False):
         super().__init__(box, x, y, taken=taken)
 
-    def show(self, screen):
+    def show(self, screen, last=False):
         if self.taken:
-            screen.blit(lineX, (self.x, self.y))
+            if last:
+                screen.blit(last_X, (self.x, self.y))
+            else:
+                screen.blit(lineX, (self.x, self.y))
         else:
             screen.blit(lineXempty, (self.x, self.y))
 
     def __repr__(self):
         return super().__repr__()+"Upper"
-
-    def select(self, screen):
-        screen.blit(last_X, (self.x, self.y))
-        self.taken = True
 
     def trigred(self, x, y):
         if x >= self.x and x <= self.x+wall_size:
@@ -189,21 +207,45 @@ class BottomWall(Wall):
     def __init__(self, box, x, y, taken=False):
         super().__init__(box, x, y, taken=taken)
 
-    def show(self, screen):
+    def show(self, screen, last=False):
         if self.taken:
-            screen.blit(lineX, (self.x, self.y))
+            if last:
+                screen.blit(last_X, (self.x, self.y))
+            else:
+                screen.blit(lineX, (self.x, self.y))
         else:
             screen.blit(lineXempty, (self.x, self.y))
 
     def __repr__(self):
         return super().__repr__()+"Bottom"
 
-    def select(self, screen):
-        screen.blit(last_X, (self.x, self.y))
-        self.taken = True
-
     def trigred(self, x, y):
         if x >= self.x and x <= self.x+wall_size:
             if y >= self.y and y <= self.y+block_size:
                 return True
         return False
+
+
+class State(object):
+    def __init__(self, board):
+        self.board = board
+        self.r = False
+
+    def actions(self):
+        pass
+
+    def result(self, action):
+        b = deepcopy(self.board)
+        s = State(b)
+        s.r = b.result(action)
+        return s
+
+    def isTerminal(self):
+        row = self.board.row
+        column = self.board.column
+        a_boxes = self.board.boxes['A']
+        h_boxes = self.board.boxes['H']
+        return (row*column) == (a_boxes+h_boxes)
+
+    def utility(self):
+        return self.board.boxes['A']

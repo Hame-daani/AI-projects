@@ -2,14 +2,14 @@ import pygame
 from core.objects import Board
 
 # A : Ai
-# B : Human
+# H : Human
 
 block_size = 20
 wall_size = 50
 
 
 class Game:
-    def __init__(self, row=10, column=10, width=None, height=None, turn='B'):
+    def __init__(self, row=10, column=10, width=None, height=None, turn='H'):
         self.marign = 50
         if not width or not height:
             self.width = ((column+1)*block_size) + \
@@ -18,8 +18,8 @@ class Game:
         else:
             self.width = width
             self.height = height
-        self.board = Board(row, column, x=self.marign, y=self.marign)
-        self.turn = turn
+        self.board = Board(row, column, x=self.marign,
+                           y=self.marign, turn=turn)
         pygame.init()
         self.screen = pygame.display.set_mode([self.width, self.height])
         # show
@@ -30,7 +30,7 @@ class Game:
 
     def run(self):
         while True:
-            if self.turn == 'A':
+            if self.board.turn == 'B':
                 # ai turn
                 pass
             else:
@@ -45,17 +45,26 @@ class Game:
                         # get the current position of the cursor
                         x = pygame.mouse.get_pos()[0]
                         y = pygame.mouse.get_pos()[1]
-                        r = self.handle_click(x, y)
-                        if r:
+                        move = self.handle_click(x, y)
+                        if move:
+                            r = self.play_the_move(move)
+                            pygame.display.set_caption(
+                                f"Turn:{self.board.turn}  A:{self.board.boxes['A']}     H:{self.board.boxes['H']}")
                             pygame.display.flip()
 
     def handle_click(self, x, y):
         walls = self.board.get_walls(x, y)
         if not walls or any(wall.taken for wall in walls):
-            return False
+            return None
+        return walls
+
+    def play_the_move(self, move):
         if self.last_wall_clicked:
             self.last_wall_clicked.show(self.screen)
-        for wall in walls:
-            wall.select(self.screen)
+        r = self.board.result(move)
+        for wall in move:
+            wall.show(self.screen, last=True)
+            if wall.box.taken:
+                wall.box.show(self.screen)
             self.last_wall_clicked = wall
-        return True
+        return r
