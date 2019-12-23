@@ -1,6 +1,7 @@
 import pygame
 from copy import deepcopy
 from collections.abc import Iterable
+from functools import lru_cache
 
 lineX = pygame.image.load("pics/lineX.png")
 lineXempty = pygame.image.load("pics/lineXempty.png")
@@ -257,6 +258,7 @@ class State(object):
         self.board = board
         self.r = False
 
+    @lru_cache(maxsize=None)
     def actions(self):
         walls = []
         grid = self.board.grid
