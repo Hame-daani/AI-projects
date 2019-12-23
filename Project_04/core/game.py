@@ -1,5 +1,7 @@
 import pygame
-from core.objects import Board
+from core.objects import Board, State
+from core.algorithm import alpha_beta_search
+from collections.abc import Iterable
 
 # A : Ai
 # H : Human
@@ -9,7 +11,7 @@ wall_size = 50
 
 
 class Game:
-    def __init__(self, row=10, column=10, width=None, height=None, turn='H'):
+    def __init__(self, row=5, column=5, width=None, height=None, turn='H'):
         self.marign = 50
         if not width or not height:
             self.width = ((column+1)*block_size) + \
@@ -29,10 +31,11 @@ class Game:
         self.last_wall_clicked = None
 
     def run(self):
-        while True:
-            if self.board.turn == 'B':
+        while not self.board.won():
+            move = None
+            if self.board.turn == 'A':
                 # ai turn
-                pass
+                move = alpha_beta_search(State(self.board))
             else:
                 # human turn
                 for event in pygame.event.get():
@@ -46,11 +49,12 @@ class Game:
                         x = pygame.mouse.get_pos()[0]
                         y = pygame.mouse.get_pos()[1]
                         move = self.handle_click(x, y)
-                        if move:
-                            r = self.play_the_move(move)
-                            pygame.display.set_caption(
-                                f"Turn:{self.board.turn}  A:{self.board.boxes['A']}     H:{self.board.boxes['H']}")
-                            pygame.display.flip()
+            if move:
+                r = self.play_the_move(move)
+                pygame.display.set_caption(
+                    f"Turn:{self.board.turn}  A:{self.board.boxes['A']}     H:{self.board.boxes['H']}")
+                pygame.display.flip()
+        print(f"A:{self.board.boxes['A']} H:{self.board.boxes['H']}")
 
     def handle_click(self, x, y):
         walls = self.board.get_walls(x, y)
@@ -62,6 +66,8 @@ class Game:
         if self.last_wall_clicked:
             self.last_wall_clicked.show(self.screen)
         r = self.board.result(move)
+        if not isinstance(move, Iterable):
+            move = [move]
         for wall in move:
             wall.show(self.screen, last=True)
             if wall.box.taken:

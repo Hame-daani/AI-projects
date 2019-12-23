@@ -1,5 +1,6 @@
 import pygame
 from copy import deepcopy
+from collections.abc import Iterable
 
 lineX = pygame.image.load("pics/lineX.png")
 lineXempty = pygame.image.load("pics/lineXempty.png")
@@ -27,7 +28,7 @@ class Board(object):
         self.boxes = {'A': 0, 'H': 0}
         self.grid = [
             [
-                Box(row, column, x=self.x+column*self.pixle, y=self.y+row*self.pixle) for column in range(column_num)
+                Box(self, row, column, x=self.x+column*self.pixle, y=self.y+row*self.pixle) for column in range(column_num)
             ]
             for row in range(row_num)
         ]
@@ -49,7 +50,24 @@ class Board(object):
 
     def result(self, move):
         r = False
+        R = 0
+        B = 1
+        L = 2
+        U = 3
+        if not isinstance(move, Iterable):
+            move = [move]
         for wall in move:
+            i = wall.box.row
+            j = wall.box.column
+            walls = self.grid[i][j].walls
+            if isinstance(wall, RightWall):
+                wall = walls[R]
+            elif isinstance(wall, BottomWall):
+                wall = walls[B]
+            elif isinstance(wall, LeftWall):
+                wall = walls[L]
+            elif isinstance(wall, UpperWall):
+                wall = walls[U]
             wall.taken = True
             if wall.box.isComplete():
                 wall.box.taken = self.turn
@@ -61,10 +79,18 @@ class Board(object):
 
     def swap_turn(self):
         self.turn = 'A' if self.turn == 'H' else 'H'
+    
+    def won(self):
+        row = self.row_num
+        column = self.column_num
+        a_boxes = self.boxes['A']
+        h_boxes = self.boxes['H']
+        return (row*column) == (a_boxes+h_boxes)
 
 
 class Box(object):
-    def __init__(self, row, column, x, y, taken=None):
+    def __init__(self, board, row, column, x, y, taken=None):
+        self.board = board
         self.x = x
         self.y = y
         self.row = row
@@ -131,7 +157,7 @@ class Wall(object):
         raise NotImplementedError
 
     def __repr__(self):
-        return f"({self.box.row+1},{self.box.column+1})"
+        return f"({self.box.row},{self.box.column})"
 
 
 class RightWall(Wall):
@@ -232,7 +258,52 @@ class State(object):
         self.r = False
 
     def actions(self):
-        pass
+        walls = []
+        grid = self.board.grid
+        for row in grid:
+            for box in row:
+                for wall in box.walls:
+                    if not wall.taken:
+                        walls.append(wall)
+        moves = set()
+        R = 0
+        B = 1
+        L = 2
+        U = 3
+        for wall in walls:
+            # up
+            if isinstance(wall, UpperWall):
+                if wall.box.row == 0:
+                    moves.add(frozenset([wall]))
+                else:
+                    i = wall.box.row
+                    j = wall.box.column
+                    moves.add(frozenset([wall, grid[i-1][j].walls[B]]))
+            # bottom
+            elif isinstance(wall, BottomWall):
+                if wall.box.row == wall.box.board.row_num-1:
+                    moves.add((wall))
+                else:
+                    i = wall.box.row
+                    j = wall.box.column
+                    moves.add(frozenset([wall, grid[i+1][j].walls[U]]))
+            # right
+            elif isinstance(wall, RightWall):
+                if wall.box.column == wall.box.board.column_num-1:
+                    moves.add(frozenset([wall]))
+                else:
+                    i = wall.box.row
+                    j = wall.box.column
+                    moves.add(frozenset([wall, grid[i][j+1].walls[L]]))
+            # left
+            elif isinstance(wall, LeftWall):
+                if wall.box.column == 0:
+                    moves.add(frozenset([wall]))
+                else:
+                    i = wall.box.row
+                    j = wall.box.column
+                    moves.add(frozenset([wall, grid[i][j-1].walls[R]]))
+        return moves
 
     def result(self, action):
         b = deepcopy(self.board)
@@ -241,8 +312,8 @@ class State(object):
         return s
 
     def isTerminal(self):
-        row = self.board.row
-        column = self.board.column
+        row = self.board.row_num
+        column = self.board.column_num
         a_boxes = self.board.boxes['A']
         h_boxes = self.board.boxes['H']
         return (row*column) == (a_boxes+h_boxes)
