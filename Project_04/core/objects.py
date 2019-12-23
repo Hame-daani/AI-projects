@@ -257,9 +257,12 @@ class State(object):
     def __init__(self, board):
         self.board = board
         self.r = False
+        self.actions = None
+        self.results = None
+        self.utils = None
 
     @lru_cache(maxsize=None)
-    def actions(self):
+    def get_actions(self):
         walls = []
         grid = self.board.grid
         for row in grid:
@@ -322,3 +325,13 @@ class State(object):
 
     def utility(self):
         return self.board.boxes['A'] - self.board.boxes['H']
+
+    @lru_cache(maxsize=None)
+    def evaluate(self):
+        self.actions = self.get_actions()
+        self.results = list(map(self.result, self.actions))
+        self.utils = list(map(lambda r: r.utility(), self.results))
+        self.actions = [x for _, x in sorted(
+            zip(self.utils, self.actions), key=lambda p: p[0])]
+        self.results = [x for _, x in sorted(
+            zip(self.utils, self.results), key=lambda p: p[0])]
