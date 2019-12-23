@@ -79,7 +79,7 @@ class Board(object):
 
     def swap_turn(self):
         self.turn = 'A' if self.turn == 'H' else 'H'
-    
+
     def won(self):
         row = self.row_num
         column = self.column_num
@@ -319,4 +319,4 @@ class State(object):
         return (row*column) == (a_boxes+h_boxes)
 
     def utility(self):
-        return self.board.boxes['A']
+        return self.board.boxes['A'] - self.board.boxes['H']
