@@ -1,7 +1,6 @@
 import pygame
 from copy import deepcopy
 from collections.abc import Iterable
-from functools import lru_cache
 
 lineX = pygame.image.load("pics/lineX.png")
 lineXempty = pygame.image.load("pics/lineXempty.png")
@@ -49,34 +48,42 @@ class Board(object):
             for box in row:
                 box.show(screen)
 
-    def result(self, move):
-        r = False
-        R = 0
-        B = 1
-        L = 2
-        U = 3
+    def do_move(self, move=None):
+        if not move:
+            return
+        swap = True
         if not isinstance(move, Iterable):
             move = [move]
         for wall in move:
-            i = wall.box.row
-            j = wall.box.column
-            walls = self.grid[i][j].walls
-            if isinstance(wall, RightWall):
-                wall = walls[R]
-            elif isinstance(wall, BottomWall):
-                wall = walls[B]
-            elif isinstance(wall, LeftWall):
-                wall = walls[L]
-            elif isinstance(wall, UpperWall):
-                wall = walls[U]
             wall.taken = True
             if wall.box.isComplete():
                 wall.box.taken = self.turn
                 self.boxes[self.turn] += 1
-                r = True
-        if not r:
+                swap = False
+        if swap:
             self.swap_turn()
-        return r
+    
+    def undo_move(self, move=None):
+        if not move:
+            return
+        swap = True
+        if not isinstance(move, Iterable):
+            move = [move]
+        for wall in move:
+            if wall.box.isComplete():
+                wall.box.taken = None
+                self.boxes[self.turn] -= 1
+                swap = False
+            wall.taken = False
+        if swap:
+            self.swap_turn()
+
+
+    def utility(self,move=None):
+        self.do_move(move)
+        util = self.boxes['A'] - self.boxes['H']
+        self.undo_move(move)
+        return util
 
     def swap_turn(self):
         self.turn = 'A' if self.turn == 'H' else 'H'
@@ -87,6 +94,56 @@ class Board(object):
         a_boxes = self.boxes['A']
         h_boxes = self.boxes['H']
         return (row*column) == (a_boxes+h_boxes)
+
+    def isTerminal(self):
+        return self.won()
+
+    def actions(self):
+        walls = []
+        for row in self.grid:
+            for box in row:
+                for wall in box.walls:
+                    if not wall.taken:
+                        walls.append(wall)
+        moves = set()
+        R = 0
+        B = 1
+        L = 2
+        U = 3
+        for wall in walls:
+            # up
+            if isinstance(wall, UpperWall):
+                if wall.box.row == 0:
+                    moves.add(frozenset([wall]))
+                else:
+                    i = wall.box.row
+                    j = wall.box.column
+                    moves.add(frozenset([wall, self.grid[i-1][j].walls[B]]))
+            # bottom
+            elif isinstance(wall, BottomWall):
+                if wall.box.row == wall.box.board.row_num-1:
+                    moves.add((wall))
+                else:
+                    i = wall.box.row
+                    j = wall.box.column
+                    moves.add(frozenset([wall, self.grid[i+1][j].walls[U]]))
+            # right
+            elif isinstance(wall, RightWall):
+                if wall.box.column == wall.box.board.column_num-1:
+                    moves.add(frozenset([wall]))
+                else:
+                    i = wall.box.row
+                    j = wall.box.column
+                    moves.add(frozenset([wall, self.grid[i][j+1].walls[L]]))
+            # left
+            elif isinstance(wall, LeftWall):
+                if wall.box.column == 0:
+                    moves.add(frozenset([wall]))
+                else:
+                    i = wall.box.row
+                    j = wall.box.column
+                    moves.add(frozenset([wall, self.grid[i][j-1].walls[R]]))
+        return sorted(moves,key=self.utility)
 
 
 class Box(object):
@@ -128,16 +185,6 @@ class Box(object):
             screen.blit(B, (x, y))
         for wall in self.walls:
             wall.show(screen)
-
-    def get_wall(self, x, y):
-        if self.upper_wall.trigred(x, y):
-            return self.upper_wall
-        if self.bottom_wall.trigred(x, y):
-            return self.bottom_wall
-        if self.left_wall.trigred(x, y):
-            return self.left_wall
-        if self.right_wall.trigred(x, y):
-            return self.right_wall
 
 
 class Wall(object):
@@ -251,87 +298,3 @@ class BottomWall(Wall):
             if y >= self.y and y <= self.y+block_size:
                 return True
         return False
-
-
-class State(object):
-    def __init__(self, board):
-        self.board = board
-        self.r = False
-        self.actions = None
-        self.results = None
-        self.utils = None
-
-    @lru_cache(maxsize=None)
-    def get_actions(self):
-        walls = []
-        grid = self.board.grid
-        for row in grid:
-            for box in row:
-                for wall in box.walls:
-                    if not wall.taken:
-                        walls.append(wall)
-        moves = set()
-        R = 0
-        B = 1
-        L = 2
-        U = 3
-        for wall in walls:
-            # up
-            if isinstance(wall, UpperWall):
-                if wall.box.row == 0:
-                    moves.add(frozenset([wall]))
-                else:
-                    i = wall.box.row
-                    j = wall.box.column
-                    moves.add(frozenset([wall, grid[i-1][j].walls[B]]))
-            # bottom
-            elif isinstance(wall, BottomWall):
-                if wall.box.row == wall.box.board.row_num-1:
-                    moves.add((wall))
-                else:
-                    i = wall.box.row
-                    j = wall.box.column
-                    moves.add(frozenset([wall, grid[i+1][j].walls[U]]))
-            # right
-            elif isinstance(wall, RightWall):
-                if wall.box.column == wall.box.board.column_num-1:
-                    moves.add(frozenset([wall]))
-                else:
-                    i = wall.box.row
-                    j = wall.box.column
-                    moves.add(frozenset([wall, grid[i][j+1].walls[L]]))
-            # left
-            elif isinstance(wall, LeftWall):
-                if wall.box.column == 0:
-                    moves.add(frozenset([wall]))
-                else:
-                    i = wall.box.row
-                    j = wall.box.column
-                    moves.add(frozenset([wall, grid[i][j-1].walls[R]]))
-        return moves
-
-    def result(self, action):
-        b = deepcopy(self.board)
-        s = State(b)
-        s.r = b.result(action)
-        return s
-
-    def isTerminal(self):
-        row = self.board.row_num
-        column = self.board.column_num
-        a_boxes = self.board.boxes['A']
-        h_boxes = self.board.boxes['H']
-        return (row*column) == (a_boxes+h_boxes)
-
-    def utility(self):
-        return self.board.boxes['A'] - self.board.boxes['H']
-
-    @lru_cache(maxsize=None)
-    def evaluate(self):
-        self.actions = self.get_actions()
-        self.results = list(map(self.result, self.actions))
-        self.utils = list(map(lambda r: r.utility(), self.results))
-        self.actions = [x for _, x in sorted(
-            zip(self.utils, self.actions), key=lambda p: p[0])]
-        self.results = [x for _, x in sorted(
-            zip(self.utils, self.results), key=lambda p: p[0])]
