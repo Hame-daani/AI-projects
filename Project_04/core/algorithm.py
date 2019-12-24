@@ -2,6 +2,8 @@ import time
 
 inf = float('inf')
 
+time_target = 10
+
 
 def alpha_beta_search(board):
     t = time.time()
@@ -10,12 +12,12 @@ def alpha_beta_search(board):
     for action in board.actions():
         board.do_move(action)
         if board.turn == 'A':
-            m = max_value(board, -inf, inf, depth=5, start_time=t)
+            m = max_value(board, -inf, inf, start_time=t)
             if m > v:
                 v = m
                 v_act = action
         else:
-            m = min_value(board, -inf, inf, depth=5, start_time=t)
+            m = min_value(board, -inf, inf, start_time=t)
             if m > v:
                 v = m
                 v_act = action
@@ -24,9 +26,37 @@ def alpha_beta_search(board):
     return v_act
 
 
+def iterative_alpha_beta_search(board):
+    t = time.time()
+    depth = 0
+    v = -inf
+    v_act = None
+    while depth <= ((board.row_num+1)*board.column_num):
+        if time.time()-t >= time_target:
+            break
+        depth += 1
+        for action in board.actions():
+            if time.time()-t >= time_target:
+                break
+            board.do_move(action)
+            if board.turn == 'A':
+                m = max_value(board, -inf, inf, start_time=t, depth=depth)
+                if m > v:
+                    v = m
+                    v_act = action
+            else:
+                m = min_value(board, -inf, inf, start_time=t, depth=depth)
+                if m > v:
+                    v = m
+                    v_act = action
+            board.undo_move(action)
+    print(f"{v} depth: {depth}")
+    return v_act
+
+
 def max_value(board, a, b, depth=inf, start_time=None):
     if start_time:
-        if time.time()-start_time >= 10:
+        if time.time()-start_time >= time_target:
             #print("time reached", end='\r')
             return board.utility()
     if board.isTerminal() or depth == 0:
@@ -35,7 +65,7 @@ def max_value(board, a, b, depth=inf, start_time=None):
     for action in board.actions():
         board.do_move(action)
         if board.turn == 'A':
-            v = max(v, max_value(board, a, b, depth, start_time))
+            v = max(v, max_value(board, a, b, depth-1, start_time))
         else:
             v = max(v, min_value(board, a, b, depth-1, start_time))
         board.undo_move(action)
@@ -47,7 +77,7 @@ def max_value(board, a, b, depth=inf, start_time=None):
 
 def min_value(board, a, b, depth=inf, start_time=None):
     if start_time:
-        if time.time()-start_time >= 10:
+        if time.time()-start_time >= time_target:
             #print("time reached", end='\r')
             return board.utility()
     if board.isTerminal() or depth == 0:
@@ -56,7 +86,7 @@ def min_value(board, a, b, depth=inf, start_time=None):
     for action in board.actions():
         board.do_move(action)
         if board.turn == 'H':
-            v = min(v, min_value(board, a, b, depth, start_time))
+            v = min(v, min_value(board, a, b, depth-1, start_time))
         else:
             v = min(v, max_value(board, a, b, depth-1, start_time))
         board.undo_move(action)

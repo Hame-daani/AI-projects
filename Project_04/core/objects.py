@@ -80,9 +80,9 @@ class Board(object):
 
 
     def utility(self,move=None):
-        self.do_move(move)
+        # self.do_move(move)
         util = self.boxes['A'] - self.boxes['H']
-        self.undo_move(move)
+        # self.undo_move(move)
         return util
 
     def swap_turn(self):
@@ -99,51 +99,48 @@ class Board(object):
         return self.won()
 
     def actions(self):
-        walls = []
-        for row in self.grid:
-            for box in row:
-                for wall in box.walls:
-                    if not wall.taken:
-                        walls.append(wall)
         moves = set()
         R = 0
         B = 1
         L = 2
         U = 3
-        for wall in walls:
-            # up
-            if isinstance(wall, UpperWall):
-                if wall.box.row == 0:
-                    moves.add(frozenset([wall]))
-                else:
-                    i = wall.box.row
-                    j = wall.box.column
-                    moves.add(frozenset([wall, self.grid[i-1][j].walls[B]]))
-            # bottom
-            elif isinstance(wall, BottomWall):
-                if wall.box.row == wall.box.board.row_num-1:
-                    moves.add((wall))
-                else:
-                    i = wall.box.row
-                    j = wall.box.column
-                    moves.add(frozenset([wall, self.grid[i+1][j].walls[U]]))
-            # right
-            elif isinstance(wall, RightWall):
-                if wall.box.column == wall.box.board.column_num-1:
-                    moves.add(frozenset([wall]))
-                else:
-                    i = wall.box.row
-                    j = wall.box.column
-                    moves.add(frozenset([wall, self.grid[i][j+1].walls[L]]))
-            # left
-            elif isinstance(wall, LeftWall):
-                if wall.box.column == 0:
-                    moves.add(frozenset([wall]))
-                else:
-                    i = wall.box.row
-                    j = wall.box.column
-                    moves.add(frozenset([wall, self.grid[i][j-1].walls[R]]))
-        return sorted(moves,key=self.utility)
+        for row in self.grid:
+            for box in row:
+                for wall in box.walls:
+                    if not wall.taken:
+                        # up
+                        if isinstance(wall, UpperWall):
+                            if wall.box.row == 0:
+                                moves.add(frozenset([wall]))
+                            else:
+                                i = wall.box.row
+                                j = wall.box.column
+                                moves.add(frozenset([wall, self.grid[i-1][j].walls[B]]))
+                        # bottom
+                        elif isinstance(wall, BottomWall):
+                            if wall.box.row == wall.box.board.row_num-1:
+                                moves.add((wall))
+                            else:
+                                i = wall.box.row
+                                j = wall.box.column
+                                moves.add(frozenset([wall, self.grid[i+1][j].walls[U]]))
+                        # right
+                        elif isinstance(wall, RightWall):
+                            if wall.box.column == wall.box.board.column_num-1:
+                                moves.add(frozenset([wall]))
+                            else:
+                                i = wall.box.row
+                                j = wall.box.column
+                                moves.add(frozenset([wall, self.grid[i][j+1].walls[L]]))
+                        # left
+                        elif isinstance(wall, LeftWall):
+                            if wall.box.column == 0:
+                                moves.add(frozenset([wall]))
+                            else:
+                                i = wall.box.row
+                                j = wall.box.column
+                                moves.add(frozenset([wall, self.grid[i][j-1].walls[R]]))
+        return moves
 
 
 class Box(object):
