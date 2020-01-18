@@ -1,6 +1,7 @@
-import pygame
-from copy import deepcopy
 from collections.abc import Iterable
+from copy import deepcopy
+
+import pygame
 
 lineX = pygame.image.load("pics/lineX.png")
 lineXempty = pygame.image.load("pics/lineXempty.png")
@@ -80,9 +81,9 @@ class Board(object):
 
 
     def utility(self,move=None):
-        # self.do_move(move)
+        self.do_move(move)
         util = self.boxes['A'] - self.boxes['H']
-        # self.undo_move(move)
+        self.undo_move(move)
         return util
 
     def swap_turn(self):
@@ -140,7 +141,7 @@ class Board(object):
                                 i = wall.box.row
                                 j = wall.box.column
                                 moves.add(frozenset([wall, self.grid[i][j-1].walls[R]]))
-        return moves
+        return sorted(moves,key=self.utility)
 
 
 class Box(object):

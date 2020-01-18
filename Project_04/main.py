@@ -1,4 +1,5 @@
 from core.game import Game
+import config
 
-g= Game()
+g= Game(row=config.rows,column=config.columns)
 g.run()

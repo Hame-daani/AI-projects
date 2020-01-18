@@ -1,8 +1,11 @@
 import time
+import sys
+
+import config
 
 inf = float('inf')
 
-time_target = 10
+time_target = config.thinking_time
 
 
 def alpha_beta_search(board):
@@ -31,7 +34,7 @@ def iterative_alpha_beta_search(board):
     depth = 0
     v = -inf
     v_act = None
-    while depth <= ((board.row_num+1)*board.column_num):
+    while depth <= ((board.row_num+1)*board.column_num)*2:
         if time.time()-t >= time_target:
             break
         depth += 1
@@ -57,7 +60,6 @@ def iterative_alpha_beta_search(board):
 def max_value(board, a, b, depth=inf, start_time=None):
     if start_time:
         if time.time()-start_time >= time_target:
-            #print("time reached", end='\r')
             return board.utility()
     if board.isTerminal() or depth == 0:
         return board.utility()
@@ -78,7 +80,6 @@ def max_value(board, a, b, depth=inf, start_time=None):
 def min_value(board, a, b, depth=inf, start_time=None):
     if start_time:
         if time.time()-start_time >= time_target:
-            #print("time reached", end='\r')
             return board.utility()
     if board.isTerminal() or depth == 0:
         return board.utility()
