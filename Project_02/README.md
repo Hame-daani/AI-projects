@@ -1,4 +1,4 @@
-# Pacman with weight
+# Advanced Pacman
 
 Try to find **optimal** path for pacman to eat **all the dots**. every cell has a **weight**.
 
